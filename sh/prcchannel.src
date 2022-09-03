@@ -6,7 +6,7 @@ mkdir -p find
 menu=$(echo "videos";echo "next page";echo "subscribe";echo "exit";)
 channelinfo=$(curl "https://damianfurrer.ch/yt/channel/$1" 2>/dev/null)
 chnlname=$(jq -r '.name' <<< "${channelinfo}")
-sel=$(dmenu -l 5 -p "$chnlname" <<< "$menu")
+sel=$(_menu 5 "$chnlname" <<< "$menu")
 while [ "$sel" != "exit" ]
 do
   sel2=$(echo "$sel")
@@ -34,7 +34,7 @@ do
   *)
   ;;
   esac
-  [ "$sel" == "" ] && sel=$(dmenu -l 5 -p "$chnlname" <<< "$menu")
+  [ "$sel" == "" ] && sel=$(_menu 5 "$chnlname" <<< "$menu")
 
 done
 }
@@ -46,3 +46,4 @@ done
 [ "$(type -t search_video_prcloop)" == "function" ] 	|| source ./sh/search-video-prcloop.src
 [ "$(type -t getchannel)" == "function" ] 		|| source ./sh/getchannel.src
 [ "$(type -t setup)" == "function" ] 			|| source ./sh/setup.src
+[ "$(type -t _menu)" == "function" ] 			|| source sh/_menu.src

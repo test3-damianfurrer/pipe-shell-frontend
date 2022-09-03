@@ -5,7 +5,7 @@ if [ "$1" == "" ]; then
   >&2 echo "Pass name!"
   exit 1
 fi
-order=$((echo "newest"; echo "shortest"; echo "oldest"; echo "longest") | dmenu -l 5 -p "Sorting: ")
+order=$((echo "newest"; echo "shortest"; echo "oldest"; echo "longest") | _menu 5 "Sorting: ")
 
 [ "$order" == "" ] && exit 1
 
@@ -49,3 +49,4 @@ else
 fi
 cd ..
 }
+[ "$(type -t _menu)" == "function" ]                    || source sh/_menu.src

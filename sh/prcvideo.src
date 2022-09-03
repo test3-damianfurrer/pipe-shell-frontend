@@ -18,7 +18,7 @@ prcvideo(){
 #  curl "https://damianfurrer.ch/yt/streams/$1" 2>/dev/null | jq '.'
 #  exit
   relstream=""
-  sel=$(echo "$actions" | dmenu -l 5 -p "${title}")
+  sel=$(echo "$actions" | _menu 5 "${title}")
   while [ "$sel" != "next" ]
   do
     sel2="$sel"
@@ -49,10 +49,10 @@ prcvideo(){
 	sel=""
       ;;
       "loop")
-	sel=$((echo "qualselect-loop"; echo "listen-loop") | dmenu -p "Loop")
+	sel=$((echo "qualselect-loop"; echo "listen-loop") | _menu "" "Loop")
       ;;
       "qualselect-loop")
-	loops=$(printf -- '-1\n1\n2\n3\n4\n5\n6\n7\n8\n9' | dmenu -l 10 -p "loops: ")
+	loops=$(printf -- '-1\n1\n2\n3\n4\n5\n6\n7\n8\n9' | _menu 10 "loops: ")
 	ffmpeg_video "" "$loops" <<< "${vinf}" || echo "failed to select quality" >&2
 	sel=""
       ;;
@@ -69,7 +69,7 @@ prcvideo(){
       "view+")
 	hls=$(jq -r '.hls' <<< "${vinf}" | sed 's/null//')
 	dash=$(jq -r '.dash' <<< "${vinf}" | sed 's/null//')
-	sel=$(([ "$hls" == "" ] || echo "view";[ "$dash" == "" ] || echo "view-dash";echo "view&"; echo "qualselect";echo "qualselectRip";echo "listen"; echo "loop"; echo "back";) | dmenu -l 10 -p "view+")
+	sel=$(([ "$hls" == "" ] || echo "view";[ "$dash" == "" ] || echo "view-dash";echo "view&"; echo "qualselect";echo "qualselectRip";echo "listen"; echo "loop"; echo "back";) | _menu 10 "view+")
 	#sel="view&"
       ;;
       "listen")
@@ -198,7 +198,7 @@ prcvideo(){
         exit 1
       ;;
     esac
-    [ "$sel" == "" ] && sel=$(echo "$actions" | dmenu -l 5 -p "${title}" )
+    [ "$sel" == "" ] && sel=$(echo "$actions" | _menu 5 "${title}" )
   done
 }
 
@@ -208,3 +208,4 @@ prcvideo(){
 [ "$(type -t search_video_prcloop)" == "function" ] || source ./sh/search-video-prcloop.src
 [ "$(type -t prcchannel)" == "function" ] || source ./sh/prcchannel.src
 [ "$(type -t showcomments)" == "function" ] || source ./sh/showcomments.src
+[ "$(type -t _menu)" == "function" ]                    || source sh/_menu.src

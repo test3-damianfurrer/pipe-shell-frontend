@@ -14,7 +14,7 @@ mkdir -p find
 menu=$(menutext)
 playlistinfo=$(getplaylist "${1}")
 name=$(jq -r '.name' <<< "${playlistinfo}")
-sel=$(dmenu -l 5 -p "$name" <<< "$menu")
+sel=$(_menu 5 "$name" <<< "$menu")
 while [ "$sel" != "exit" ]
 do
   sel2=$(echo "$sel")
@@ -45,7 +45,7 @@ do
   *)
   ;;
   esac
-  [ "$sel" == "" ] && sel=$(dmenu -l 5 -p "$name" <<< "$menu")
+  [ "$sel" == "" ] && sel=$(_menu 5 "$name" <<< "$menu")
 done
 }
 
@@ -53,6 +53,7 @@ done
 [ "$(type -t search_video_prcloop)" == "function" ] 	|| source ./sh/search-video-prcloop.src
 [ "$(type -t getplaylist)" == "function" ] 		|| source ./sh/getplaylist.src
 [ "$(type -t setup)" == "function" ] 			|| source ./sh/setup.src
+[ "$(type -t _menu)" == "function" ]                    || source sh/_menu.src
 
 keys(){
 

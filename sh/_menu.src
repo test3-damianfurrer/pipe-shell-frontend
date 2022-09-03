@@ -1,0 +1,9 @@
+#!/bin/sh
+
+_menu(){
+l="$1"
+p="${2}"
+[ "$l" == "" ] && l=10
+[ "$p" == "" ] && p="Select"
+dmenu -l $l -p "${p}" < /dev/stdin
+}

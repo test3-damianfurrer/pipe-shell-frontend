@@ -7,8 +7,9 @@ streaminfos=$(cat -)
 quals=$(jq -j '.[]|.quality,.bitrate,"_",.format,"\n"' <<< "${streaminfos}") 
 declare -i index
 #index=$(grep -n "$(dmenu -l 10 -p Quality <<< "$quals")" <<< "$quals" | awk '{print $1}' FS=':')
-qual=$(dmenu -l 10 -p Quality <<< "$quals") || return 1
+qual=$(_menu 10 "Quality" <<< "$quals") || return 1
 index=$(grep -n "$qual" <<< "$quals" | awk '{print $1}' FS=':')
 index=$(($index-1))
 jq -r ".[$index]" <<< "${streaminfos}"
 }
+[ "$(type -t _menu)" == "function" ]                    || source sh/_menu.src
