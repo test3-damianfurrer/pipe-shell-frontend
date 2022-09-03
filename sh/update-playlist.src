@@ -1,0 +1,13 @@
+#!/bin/sh
+
+[ "$(type -t getchannel)" == "function" ] || source ./sh/getplaylist.src
+[ "$(type -t setupplaylist)" == "function" ] || source ./sh/setupplaylist.src
+
+update_playlist(){
+  if [ "$1" != "" ]; then
+    pljson=$(getplaylist "${1}")
+    [ "$pljson" == "null" ] && echo "update_playlist: error null json for $1" >&2
+    lvid=$(jq -r '.relatedStreams[0].id' <<< "${pljson}")
+  [ -d "videos/$lvid" ] || setupplaylist "$1" <<< "${pljson}" 1>&2 $2
+  fi
+}

@@ -1,0 +1,10 @@
+#!/bin/sh
+showcomments(){
+
+vidid="$1"
+curl "https://damianfurrer.ch/yt/comments/$vidid" 2>/dev/null | prccomments "$vidid" ""
+
+#curl "https://damianfurrer.ch/yt/comments/$vidid" || echo "failed" >&2
+}
+
+[ "$(type -t comments)" == "function" ] || source ./sh/comments.src

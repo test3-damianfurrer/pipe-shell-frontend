@@ -1,0 +1,9 @@
+#!/bin/sh
+#$1 channel id
+
+getplaylist(){
+ret=$(curl "https://damianfurrer.ch/yt/playlists/${1}" 2>/dev/null)
+err=$(jq -r '.error' <<< "${ret}")
+[ "$err" != "null" ] && (echo "Error getplaylist():"; echo "${err}") >&2 && return 0
+echo "${ret}"
+}

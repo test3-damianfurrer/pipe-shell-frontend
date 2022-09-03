@@ -1,0 +1,62 @@
+#!/bin/sh
+prccomment(){
+  local vidid="$1"
+  local levelinidcator="$2"
+  local comment=$(cat -)
+#  commentText=$(jq -r '.commentText' <<< "${comment}")
+#jq -r '.' <<< "${comment}" >&2
+  local buttons="next:0,exit:100"
+  local default="next"
+
+  local inline=$(tail -n 1 <<< "${levelinidcator}" | awk '{print $1}' FS='>')
+  local currind=$([ "$levelinidcator" != "" ] && echo "$levelinidcator"; echo -n "$inline->"; jq -r '.author'  <<< "${comment}")
+
+  local commentText=$([ "${levelinidcator}" != "" ] && printf '%s\n\n' "${levelinidcator}";jq -r '.commentedTime+" - "+.author+"\n\n"+.commentText+"\n\nLikes: "+(.likeCount|tostring)+"\nPinned:"+(.pinned|tostring)+" Hearted: "+(.hearted|tostring)+" verified: "+(.verified|tostring)' <<< "${comment}")
+  local replies=$(jq -r '.repliesPage' <<< "${comment}" | jq -sRr @uri)
+#  >&2 echo "repl: $replies"
+  [ "$replies" != "null%0A" ] && local buttons="replies:10,$buttons" && local default="replies"
+  xmessage -file - -buttons "$buttons" -default "$default" <<< "${commentText}"
+  case $? in
+  10)
+    curl "https://damianfurrer.ch/yt/nextpage/comments/$vidid?nextpage=${replies}" 2>/dev/null | prccomments "$1" "${currind}" || return 1
+    #curl "https://damianfurrer.ch/yt/nextpage/comments/$vidid?nextpage=${replies}" | prccomments "$1" "${currind}" || return 1
+  ;;
+  100)
+    return 1
+  ;;
+  esac
+  return 0
+}
+
+prccomments(){
+  local vidcomments=$(cat -)
+  local vidid="$1"
+  local levelinidcator="${2}"
+  declare -i i
+  local i=0
+  local subcomment=$(jq -r ".comments[$i]" <<< "${vidcomments}")
+  [ $(jq -r ".disabled" <<< "${vidcomments}") == "true" ] && echo "comments disabled" | xmessage -file - -buttons "okay:0" -default "okay" && return 1
+  [ "$subcomment" == "null" ] && echo "no comments" | xmessage -file - -buttons "okay:0" -default "okay" && return 
+
+  while [ "$subcomment" != "null" ]
+  do
+	local x=0
+	prccomment "$vidid" "${levelinidcator}" <<< "${subcomment}" || local x=1
+	if [ "$x" == "0" ]; then
+#	  echo "0" >&2
+	  local i+=1
+	  local subcomment=$(jq -r ".comments[$i]" <<< "${vidcomments}")
+	else
+#	  echo "1" >&2
+	  local subcomment="null"
+	fi
+  done
+#>&2 echo "exit subcomments"
+  if [ "$x" != "1" ]; then
+    local nextpage=$(jq -r '.nextpage' <<< "${vidcomments}" | jq -sRr @uri)
+    [ "$nextpage" != "null%0A" ] && curl "https://damianfurrer.ch/yt/nextpage/comments/$1?nextpage=${nextpage}" 2>/dev/null | prccomments "$vidid"
+  fi
+#  [ "$nextpage" != "null%0A" ] && curl "https://damianfurrer.ch/yt/nextpage/comments/$1?nextpage=${nextpage}" | prccomments "$vidid"
+#>&2 echo "eof"
+  return 0 #without this additional instruction it exits entirely after first subcomment exit
+}

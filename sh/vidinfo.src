@@ -1,0 +1,49 @@
+#!/bin/sh
+
+vidinfo(){
+##  vinf=$(curl "https://damianfurrer.ch/yt/streams/$1" 2>/dev/null)
+vinf=$(cat -)
+[ "$1" == "" ] && exit
+inf="$2"
+[ "$2" == "" ] && inf="desc"
+
+case "$2" in
+      "desc")
+        jq -r '.description' <<< "${vinf}" | sed 's/<a .{1,}>//g' | sed 's/<\/a>//g' | sed 's/\\n/\n/g' | sed 's/<br>/\n/g'
+      ;;
+      "info")
+	uploadDate=$(jq -r '.uploadDate' <<< "${vinf}")
+	dash=$(jq -r '.dash' <<< "${vinf}")
+	lbryId=$(jq -r '.lbryId' <<< "${vinf}")
+	duration=$(jq -r '.duration' <<< "${vinf}")
+	views=$(jq -r '.views' <<< "${vinf}")
+	likes=$(jq -r '.likes' <<< "${vinf}")
+	dislikes=$(jq -r '.dislikes' <<< "${vinf}")
+	livestream=$(jq -r '.livestream' <<< "${vinf}")
+	proxyurl=$(jq -r '.proxyUrl' <<< "${vinf}")
+	chapters=$(jq -r '.chapters' <<< "${vinf}")
+#	relstream=$(jq -r'.relatedStreams[]' <<< "${vinf}")
+
+	uploader=$(jq -r '.uploader' <<< "${vinf}")
+	uploaderUrl=$(jq -r '.uploaderUrl'  <<< "${vinf}")
+	uploaderVerified=$(jq -r '.uploaderVerified' <<< "${vinf}")
+	uploaderSubscriberCount=$(jq -r '.uploaderSubscriberCount' <<< "${vinf}")
+
+	uploaderAvatar=$(jq -r '.uploaderAvatar' <<< "${vinf}")
+	thumbnailUrl=$(jq -r '.thumbnailUrl' <<< "${vinf}")
+	echo "Id: $1";\
+	  echo "Title: $title";\
+	  echo "Uploaded: $uploadDate";\
+	  echo "Duration: $duration";\
+	  echo "Views: $views";\
+	  echo "Likes: $likes / Dislikes: $dislikes";\
+	  echo "livestream: $livestream";\
+	  echo "proxy: $proxyurl";\
+	  echo "chapters: $chapters";\
+	  echo "lbry: $lbryId; dash: $dash";\
+	  echo ""; echo "---uploader---";\
+	  echo "Channel: $uploader"; echo "Url: $uploaderUrl";echo "Verified: $uploaderVerified";echo "Subscribers: $uploaderSubscriberCount"\
+
+       ;;
+esac
+}

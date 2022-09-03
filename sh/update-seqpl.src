@@ -1,0 +1,19 @@
+#!/bin/sh
+
+update_seqpl(){
+  list=$(cat -)
+  lines=$(echo "$list" | wc -l)
+  declare -i i
+  i=1
+
+  while read line
+  do
+	printf '%s   \r' "$i/$lines"
+	i+=1
+	update_playlist "${line}" "" # "&"
+  done <<< $list
+  [ -e "playlists/.upds" ] && rm playlists/.upds
+  [ -e "playlists/.upds" ] || date +%s > playlists/.upds
+}
+
+[ "$(type -t update_playlist)" == "function" ] || source ./sh/update-playlist.src

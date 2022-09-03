@@ -1,0 +1,36 @@
+#!/bin/sh
+#set -e
+#streams=$(curl "https://damianfurrer.ch/yt/streams/t_ZhpTTng0w" 2>/dev/null)
+#ffmpeg -i "${1}" -map 0:a:0 -map 0:v:0 -c:a copy -c:v copy -f matroska - | mpv - --no-ytdl
+# requires useflag libxml2 for ffmpeg to enable dash demuxing
+view_dash(){
+x=""
+[ -e ".dash-enabled" ] && x=$(cat .dash-enabled)
+[ "$x" == "" ] && stream=$(cat -) && mpv "${stream}" --no-ytdl
+[ "$x" == "" ] || ffmpeg_dash < /dev/stdin
+
+}
+
+ffmpeg_dash(){
+dash=$(cat -)
+savepath="$1"
+#ffmpeg -i "${1}" -map 0:a:0 -map 0:v:0 -c:a copy -c:v copy -f matroska - | mpv - --no-ytdl
+ffmpeg -i "${dash}" -c copy -f matroska - 2>/dev/null | mpv - #--no-cache --no-ytdl
+}
+
+none(){
+videostrm=$(jq -r '.videoStreams' <<< "${streams}" | streamselect) || return 1
+>&2 echo "$videostrm"
+video=$(jq -r ".url" <<< "${videostrm}")
+vidonly=$(jq -r ".videoOnly" <<< "${videostrm}")
+if [ "$vidonly" == "true" ]; then
+  audio=$(jq -r '.audioStreams' <<< "${streams}" | streamselect | jq -r '.url') || return 1
+  [ "$savepath" == "" ] && ffmpeg -i "${audio}" -i "${video}" -map 0:a -map 1:v -c copy -f matroska - 2>/dev/null | mpv - --no-cache --no-ytdl
+  [ "$savepath" == "" ] || ffmpeg -i "${audio}" -i "${video}" -map 0:a -map 1:v -c copy -f matroska - 2>/dev/null | tee "$savepath" | mpv - --no-ytdl
+else
+    [ "$savepath" == "" ] && ffmpeg -i "${video}" -c copy -f matroska - 2>/dev/null | mpv - --no-cache --no-ytdl
+    [ "$savepath" == "" ] || ffmpeg -i "${video}" -c copy -f matroska - 2>/dev/null | tee "$savepath" |mpv - --no-ytdl
+  #mpv "${video}"
+fi
+}
+# [ "$(type -t streamselect)" == "function" ] || source ./sh/streamselect.src

@@ -1,0 +1,26 @@
+#!/bin/sh
+
+updatepl(){
+list=$(cat -)
+update_ifdolong "update_seqpl" "playlists/" <<< "${list}" || [ $? -eq 200 ] || return 0
+x=$(ps | wc -l)
+
+while read line
+do
+#   update_playlist "${line}" "&" > /dev/null 2>&1 &
+   update_playlist "${line}" "" > /dev/null 2>&1
+done <<< $list
+y=$(ps | wc -l)
+
+while [ $y -gt $x ]
+do
+  sleep 0.5
+  y=$(ps | wc -l)
+done
+}
+
+
+[ "$(type -t update_playlist)" == "function" ] || source ./sh/update-playlist.src
+[ "$(type -t update_ifdolong)" == "function" ] || source ./sh/update-ifdolong.src
+[ "$(type -t update_seqpl)" == "function" ] || source ./sh/update-seqpl.src
+

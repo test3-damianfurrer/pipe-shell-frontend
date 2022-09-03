@@ -1,0 +1,51 @@
+#!/bin/sh
+search_video_prc(){
+cd find || exit 1
+stdi=$(cat -)
+names=$(jq -r '.title' <<< "${stdi}" | sed 's/\//_/g')
+thumbs=$(jq -r '.thumbnail' <<< "${stdi}")
+urls=$(jq -r '.id' <<< "${stdi}")
+
+mkdir -p res
+mkdir -p webp
+mkdir -p txt
+#cd res
+cd webp
+declare -i i
+i=1
+x=$(ps | wc -l)
+
+while read line
+do
+name=$(awk "NR == $i"' {print}' <<< "${names}")
+name="${i}) ${name}"
+names2=$(echo "${names2}";echo "${name}")
+#[ -L "../res/${name}" ] && name="$(date +%s)_${name}"
+#>&2 echo "${name}"
+id=$(awk "NR == $i"' {print}' <<< "$urls")
+
+wget -q -O "${name}.webp" "${line}" &
+echo "${id}" > "../txt/${name}"
+ 
+ln -s "../webp/${name}.webp" "../res/${name}"
+i+=1
+done <<< "${thumbs}"
+y=$(ps | wc -l)
+while [ $y -gt $x ]
+do
+  sleep 0.5
+  y=$(ps | wc -l)
+done
+
+
+cd ../res
+selecttxt=$(/home/damian/source-code/sxiv/sxiv-test -iol <<< "${names2}")
+cd ..
+while read line
+do
+	[ "$line" != "" ] && cat - < "txt/${line}"
+done <<< "${selecttxt}"
+rm res/*
+rm webp/*
+rm txt/*
+}

@@ -1,0 +1,18 @@
+#!/bin/sh
+
+update_ifdolong(){
+cmd="${1}"
+[ "$cmd" == "" ] && cmd="update_seq"
+lastchng=$(stat -c %Y "${2}.upds")
+[ -e "${2}.upds" ] || lastchng=0
+mintime=$(date -d '8 hours ago' +%s)
+if [ $lastchng -lt $mintime ]; then
+  $cmd < /dev/stdin
+  return $?
+else
+  return 200
+fi
+}
+
+[ "$(type -t update_seq)" == "function" ] || source ./sh/update-seq.src
+#[ "$(type -t update_seqpl)" == "function" ] || source ./sh/update-seqpl.src

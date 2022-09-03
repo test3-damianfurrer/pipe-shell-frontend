@@ -1,0 +1,12 @@
+#!/bin/sh
+
+[ "$(type -t getchannel)" == "function" ] || source ./sh/getchannel.src
+[ "$(type -t setup)" == "function" ] || source ./sh/setup.src
+
+update_chnl(){
+  if [ "$1" != "" ]; then
+    chnljson=$(getchannel "${1}")
+    lvid=$(jq -r '.relatedStreams[0].id' <<< "${chnljson}")
+  [ -d "videos/$lvid" ] || setup <<< "${chnljson}" 1>&2 $2
+  fi
+}

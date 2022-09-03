@@ -1,0 +1,71 @@
+#!/bin/sh
+#$1 channel id
+menutext(){
+  echo "videos"
+  [ "$1" == "prev" ] && echo "prev page"
+  np=$(jq -r '.nextpage' <<< "${playlistinfo}")
+  [ "$np" == "null" ] || echo "next page"
+  echo "info"
+  echo "exit"
+}
+
+prcplaylist(){
+mkdir -p find
+menu=$(menutext)
+playlistinfo=$(getplaylist "${1}")
+name=$(jq -r '.name' <<< "${playlistinfo}")
+sel=$(dmenu -l 5 -p "$name" <<< "$menu")
+while [ "$sel" != "exit" ]
+do
+  sel2=$(echo "$sel")
+  sel=""
+  case "$sel2" in
+  "info")
+	[ "$info" == "" ] && info=$(jq -r '.bannerUrl,.name,.thumbnailUrl,.uploader,.uploaderAvatar,.uploaderUrl,.videos' <<< "${playlistinfo}")
+	xmessage -file -  -default "okay" <<< "${info}"
+  	;;
+  "videos")
+	jq '.relatedStreams[]' <<< "${playlistinfo}" | search_video_prcloop;;
+  "prev page")
+	playlistinfo="${prevpage}" ## $(echo "${prevpage}")
+	prevpage=""
+        menu=$(menutext "")
+	sel="videos"
+  ;;
+  "next page")
+	prevpage=$(echo "${playlistinfo}")
+	nextpage=$(jq -r '.nextpage' <<< "${playlistinfo}" | jq -sRr @uri) #| sed 's/\\"/"/g' | sed 's/\&/%26/g')
+	#save info before
+	[ "$info" == "" ] && info=$(jq -r '.bannerUrl,.name,.thumbnailUrl,.uploader,.uploaderAvatar,.uploaderUrl,.videos' <<< "${playlistinfo}")
+        playlistinfo=$(curl "https://damianfurrer.ch/yt/nextpage/playlists/$1?nextpage=${nextpage}" 2> /dev/null)
+        menu=$(menutext "prev")
+	sel="videos"
+  ;;
+
+  *)
+  ;;
+  esac
+  [ "$sel" == "" ] && sel=$(dmenu -l 5 -p "$name" <<< "$menu")
+done
+}
+
+
+[ "$(type -t search_video_prcloop)" == "function" ] 	|| source ./sh/search-video-prcloop.src
+[ "$(type -t getplaylist)" == "function" ] 		|| source ./sh/getplaylist.src
+[ "$(type -t setup)" == "function" ] 			|| source ./sh/setup.src
+
+keys(){
+
+[
+  "bannerUrl",		 -> null
+  "name",
+  "nextpage",		 -> nextpage
+  "relatedStreams",
+  "thumbnailUrl",	 -> e.g. first video thumb
+  "uploader",		 -> channel name
+  "uploaderAvatar",	 -> chnlavatar
+  "uploaderUrl",	 -> channel
+  "videos"		 -> int count
+]
+
+}
