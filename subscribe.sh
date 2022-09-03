@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 ./sh/update-ifseq.sh
 source ./sh/getchannel.src
 source ./sh/search-channel.src

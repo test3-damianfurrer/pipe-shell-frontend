@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 source ./sh/getchannel.src
 source ./sh/setup.src
 

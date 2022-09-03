@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 ./sh/update-ifseq.sh
 [ "$(type -t prcvideo)" == "function" ] || source ./sh/prcvideo.src
 [ "$(type -t search_video)" == "function" ] || source ./sh/search-video.src

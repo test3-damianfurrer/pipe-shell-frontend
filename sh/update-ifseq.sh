@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 source ./sh/update-ifdolong.src
 

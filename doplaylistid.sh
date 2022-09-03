@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 source sh/prcplaylist.src
 source sh/_menu.src
 #prcplaylist "PLUlK5tPwfK5ICvNt_3XyFrsu_BE2NerpJ" # $1

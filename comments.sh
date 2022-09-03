@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 source sh/comments.src
 
 ./sh/update-ifseq.sh

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 chnldir=$(pwd)
 mkdir -p _duration
 mkdir -p  _uploaded

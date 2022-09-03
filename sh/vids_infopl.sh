@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 workdir=$(pwd)
 mkdir -p _duration
 mkdir -p _uploaded

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #$1 channelname
 ./sh/update-ifseq.sh
 
