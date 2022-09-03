@@ -25,7 +25,7 @@ prcvideo(){
     sel=""
     case "$sel2" in
       "showtmp")
-	sxiv tmp.webp #;sel=""
+	_thumbselFull tmp.webp #;sel=""
 	rm tmp.webp
 	sel="info-show"
       ;;
@@ -209,3 +209,4 @@ prcvideo(){
 [ "$(type -t prcchannel)" == "function" ] || source ./sh/prcchannel.src
 [ "$(type -t showcomments)" == "function" ] || source ./sh/showcomments.src
 [ "$(type -t _menu)" == "function" ]                    || source sh/_menu.src
+[ "$(type -t _thumbsel)" == "function" ]            || source sh/_thumbsel.src

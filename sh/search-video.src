@@ -13,4 +13,4 @@ curl "https://damianfurrer.ch/yt/search?q=${url}&filter=videos" 2>/dev/null | jq
 }
 
 [ "$(type -t search_video_prc)" == "function" ] || source ./sh/search-video-prc.src
-
+#[ "$(type -t _thumbsel)" == "function" ]            || source sh/_thumbsel.src

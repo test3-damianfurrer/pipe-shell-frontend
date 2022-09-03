@@ -33,9 +33,9 @@ cd "$order"
 #vidfolder=$(ls | sort -n | sed 's/$/\/thumb.webp/' | /home/damian/source-code/sxiv/sxiv-test -oi1l | sed 's/\/thumb.webp//')
 #fi
 if [ "$reverse" == "" ]; then
-vidfolder=$(ls | awk '{print $0,gsub("^[-0-9]{1,}_","",$0),$0}' OFS="/" | sed 's/\/[-0-9]\//\//' | sort -n -r | head -n 100 | /home/damian/source-code/sxiv/sxiv-test -oi1l | awk '{print $1}' FS='/')
+vidfolder=$(ls | awk '{print $0,gsub("^[-0-9]{1,}_","",$0),$0}' OFS="/" | sed 's/\/[-0-9]\//\//' | sort -n -r | head -n 100 | _thumbselOne | awk '{print $1}' FS='/')
 else
-vidfolder=$(ls | awk '{print $0,gsub("^[-0-9]{1,}_","",$0),$0}' OFS="/" | sed 's/\/[-0-9]\//\//' | sort -n | head -n 100 | /home/damian/source-code/sxiv/sxiv-test -oi1l | awk '{print $1}' FS='/')
+vidfolder=$(ls | awk '{print $0,gsub("^[-0-9]{1,}_","",$0),$0}' OFS="/" | sed 's/\/[-0-9]\//\//' | sort -n | head -n 100 | _thumbselOne | awk '{print $1}' FS='/')
 fi
 #echo "${vidfolder}"
 #exit
@@ -50,3 +50,5 @@ fi
 cd ..
 }
 [ "$(type -t _menu)" == "function" ]                    || source sh/_menu.src
+[ "$(type -t _thumbsel)" == "function" ]            || source sh/_thumbsel.src
+

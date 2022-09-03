@@ -23,7 +23,7 @@ i+=1
 #exit
 done <<< "${thumbs}"
 
-selecttxt=$(sed 's/$/.webp/' <<< "$names" | /home/damian/source-code/sxiv/sxiv-test -iol | sed 's/.webp$/.txt/')
+selecttxt=$(sed 's/$/.webp/' <<< "$names" | _thumbsel | sed 's/.webp$/.txt/')
 #cat "${selecttxt}"
 while read line
 do
@@ -35,3 +35,4 @@ cd ..
 cd ..
 }
 [ "$(type -t urlencode)" == "function" ] || source ./sh/urlencode.src
+[ "$(type -t _thumbsel)" == "function" ]            || source sh/_thumbsel.src

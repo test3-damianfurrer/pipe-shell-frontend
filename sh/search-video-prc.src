@@ -39,7 +39,7 @@ done
 
 
 cd ../res
-selecttxt=$(/home/damian/source-code/sxiv/sxiv-test -iol <<< "${names2}")
+selecttxt=$(_thumbsel <<< "${names2}")
 cd ..
 while read line
 do
@@ -49,3 +49,4 @@ rm res/*
 rm webp/*
 rm txt/*
 }
+[ "$(type -t _thumbsel)" == "function" ]            || source sh/_thumbsel.src
