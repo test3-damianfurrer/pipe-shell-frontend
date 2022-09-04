@@ -1,6 +1,6 @@
 #!/bin/sh
 prcrelstrms(){
-  echo "strms" >&2
+  #echo "strms" >&2
   relstrm=$(cat - | sed 's/|/¬Ipipe¬/g')
   [ "$relstrm" == "null" ] && echo "$1 prcrelstrms is null" >&2
   [ "$1" == "" ] && exit 1

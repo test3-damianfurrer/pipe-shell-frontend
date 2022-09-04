@@ -5,6 +5,7 @@ menutext(){
   [ "$1" == "prev" ] && echo "prev page"
   np=$(jq -r '.nextpage' <<< "${playlistinfo}")
   [ "$np" == "null" ] || echo "next page"
+  echo "subscribe"
   echo "info"
   echo "exit"
 }
@@ -20,6 +21,10 @@ do
   sel2=$(echo "$sel")
   sel=""
   case "$sel2" in
+  "subscribe")
+    echo "${1}" >> pllists.lst
+    getplaylist "${1}" | setupplaylist
+  ;;
   "info")
 	[ "$info" == "" ] && info=$(jq -r '.bannerUrl,.name,.thumbnailUrl,.uploader,.uploaderAvatar,.uploaderUrl,.videos' <<< "${playlistinfo}")
 	xmessage -file -  -default "okay" <<< "${info}"
@@ -52,7 +57,7 @@ done
 
 [ "$(type -t search_video_prcloop)" == "function" ] 	|| source ./sh/search-video-prcloop.src
 [ "$(type -t getplaylist)" == "function" ] 		|| source ./sh/getplaylist.src
-[ "$(type -t setup)" == "function" ] 			|| source ./sh/setup.src
+[ "$(type -t setupplaylist)" == "function" ] 		|| source ./sh/setupplaylist.src
 [ "$(type -t _menu)" == "function" ]                    || source sh/_menu.src
 
 keys(){

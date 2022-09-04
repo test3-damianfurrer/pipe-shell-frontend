@@ -4,7 +4,8 @@ set -e
 
 [ -d "${1}" ] || exit 1
 channelid=$(cat "${1}/id.json")
-foldername=$(basename $(pwd -P))
+#foldername=$(basename $(pwd -P))
+foldername=$(cat "${1}/name.json")
 #echo "$channelid"
 
 cd "channels/${foldername}"
