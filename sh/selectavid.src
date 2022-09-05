@@ -5,7 +5,9 @@ if [ "$1" == "" ]; then
   >&2 echo "Pass name!"
   exit 1
 fi
-order=$((echo "newest"; echo "shortest"; echo "oldest"; echo "longest") | _menu 5 "Sorting: ")
+order="${2}"
+index="$3"
+[ "$order" == "" ] && order=$((echo "newest"; echo "shortest"; echo "oldest"; echo "longest") | _menu 5 "Sorting: ")
 
 [ "$order" == "" ] && exit 1
 
@@ -32,10 +34,19 @@ cd "$order"
 #else
 #vidfolder=$(ls | sort -n | sed 's/$/\/thumb.webp/' | /home/damian/source-code/sxiv/sxiv-test -oi1l | sed 's/\/thumb.webp//')
 #fi
-if [ "$reverse" == "" ]; then
-vidfolder=$(ls | awk '{print $0,gsub("^[-0-9]{1,}_","",$0),$0}' OFS="/" | sed 's/\/[-0-9]\//\//' | sort -n -r | head -n 100 | _thumbselOne | awk '{print $1}' FS='/')
+if [ "$index" == "" ]; then
+  if [ "$reverse" == "" ]; then
+    vidfolder=$(ls | awk '{print $0,gsub("^[-0-9]{1,}_","",$0),$0}' OFS="/" | sed 's/\/[-0-9]\//\//' | sort -n -r | head -n 100 | _thumbselOne | awk '{print $1}' FS='/')
+  else
+    vidfolder=$(ls | awk '{print $0,gsub("^[-0-9]{1,}_","",$0),$0}' OFS="/" | sed 's/\/[-0-9]\//\//' | sort -n | head -n 100 | _thumbselOne | awk '{print $1}' FS='/')
+  fi
 else
-vidfolder=$(ls | awk '{print $0,gsub("^[-0-9]{1,}_","",$0),$0}' OFS="/" | sed 's/\/[-0-9]\//\//' | sort -n | head -n 100 | _thumbselOne | awk '{print $1}' FS='/')
+#  vidfolder=$(ls | awk '{print $0,gsub("^[-0-9]{1,}_","",$0),$0}' OFS="/" | sed 's/\/[-0-9]\//\//' | sort -n -r | head -n 100 | awk 'NR == '"$index"'{print $1}' FS='/')
+  if [ "$reverse" == "" ]; then
+    vidfolder=$(ls | awk '{print $0,gsub("^[-0-9]{1,}_","",$0),$0}' OFS="/" | sed 's/\/[-0-9]\//\//' | sort -n -r | head -n 100 | awk 'NR=='"$index"' {print $1}' FS='/')
+  else
+    vidfolder=$(ls | awk '{print $0,gsub("^[-0-9]{1,}_","",$0),$0}' OFS="/" | sed 's/\/[-0-9]\//\//' | sort -n | head -n 100 | _thumbselOne | awk 'NR=='"$index"' {print $1}' FS='/')
+  fi
 fi
 #echo "${vidfolder}"
 #exit

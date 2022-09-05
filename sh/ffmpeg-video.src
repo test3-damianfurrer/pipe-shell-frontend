@@ -5,15 +5,17 @@ ffmpeg_video(){
 streams=$(cat -)
 savepath="$1"
 loop="$2"
+vidsel=$(awk '{print $1}' FS='{v-a}' <<< "${3}")
+audsel=$(awk '{print $2}' FS='{v-a}' <<< "${3}")
 [ "$loop" == "" ] && loop="0"
 
-videostrm=$(jq -r '.videoStreams' <<< "${streams}" | streamselect) || return 1
+videostrm=$(jq -r '.videoStreams' <<< "${streams}" | streamselect "${vidsel}") || return 1
 >&2 echo "$videostrm"
 video=$(jq -r ".url" <<< "${videostrm}")
 vidonly=$(jq -r ".videoOnly" <<< "${videostrm}")
 
 if [ "$vidonly" == "true" ]; then
-  audio=$(jq -r '.audioStreams' <<< "${streams}" | streamselect | jq -r '.url') || return 1
+  audio=$(jq -r '.audioStreams' <<< "${streams}" | streamselect "${audsel}" | jq -r '.url') || return 1
   if [ "$savepath" == "" ]; then
 	#--force-seekable=yes
 	[ "$loop" == "0" ] && ffmpeg -i "${audio}" -i "${video}" -map 0:a -map 1:v -c copy -f matroska - 2>/dev/null | mpv - --no-cache --force-seekable=no --no-ytdl
