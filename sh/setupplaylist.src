@@ -3,7 +3,7 @@ prcrelstrms(){
   #echo "strms" >&2
   relstrm=$(cat - | sed 's/|/¬Ipipe¬/g')
   [ "$relstrm" == "null" ] && echo "$1 prcrelstrms is null" >&2
-  [ "$1" == "" ] && exit 1
+  [ "$1" == "" ] && return 1
   cd "playlists/byid/${1}"
 
   mix=$(jq -rj '.id,"|",.title,"|",.thumbnail,"|",.uploaderName,"|",.uploaderUrl,"|",.url,"|",.uploadedDate,"|",.uploaded,"|",.uploaderVerified,"|",.duration,"|",.views,"|"' <<< "${relstrm}")
@@ -37,14 +37,14 @@ jq -r '{banner:.bannerUrl,name:.name,thumb:.thumbnailUrl,uploader:.uploader,uplo
 name=$(jq -r '.name' <<< "${info}" | sed 's/\//_/g')
 echo "updated playlist: $name" >&2
 ln -s -f "$PWD/playlists/byid/${1}" "$PWD/playlists/byname/${name}"
-#exit
+
 }
 
 
 setup(){
 chnl=$(cat -)
-#[ -e "channel.json" ] || exit 1
-[ "$chnl" = "" ] && exit 1
+#[ -e "channel.json" ] || rex 1
+[ "$chnl" = "" ] && return 1
 [ -d "channels" ]    || mkdir "channels"
 [ -d "channel_ids" ] || mkdir "channel_ids"
 channel=$(jq '.name' <<< "$chnl" | sed 's/^"//' | sed 's/"$//')

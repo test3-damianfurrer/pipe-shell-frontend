@@ -1,7 +1,7 @@
 #!/bin/sh
 process(){
 relstrm=$(cat - | sed 's/|/¬Ipipe¬/g')
-[ "$1" == "" ] && exit 1
+[ "$1" == "" ] && return 1
 cd "channel_ids/${1}"
 
 mix=$(jq -rj '.id,"|",.title,"|",.thumbnail,"|",.uploaderName,"|",.uploaderUrl,"|",.url,"|",.uploadedDate,"|",.uploaded,"|",.uploaderVerified,"|",.duration,"|",.views,"|"' <<< "${relstrm}")
