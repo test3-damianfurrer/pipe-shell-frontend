@@ -1,0 +1,53 @@
+#!/bin/sh
+set -e
+# in .videoStreams
+streamselectx(){
+#preselect="126 kbps132459_M4A"
+preselect="${1}"
+streaminfos=$(cat -)
+#echo "${streaminfos}" >&2
+quals=$(jq -j '.[]|.quality,.bitrate,"_",.format,"\n"' <<< "${streaminfos}")
+if [ "$preselect" != "" ]; then
+pref=$(awk '{print $3}' FS='{x}' <<< "$preselect")
+preq=$(awk '{print $1}' FS='{x}' <<< "$preselect")
+preb=$(awk '{print $2}' FS='{x}' <<< "$preselect"| awk '{print $1}' FS='_')
+echo "pref: $pref" >&2
+echo "preq: $preq" >&2
+echo "preb: $preb" >&2
+  lc=$(wc -l <<< "${quals}")
+  echo "lines qual: $lc" >&2
+  [ "$lc" -gt "1" ] && qualsF=$(grep "_$pref$" <<< "${quals}")
+  #quals2="${quals}")
+  quals2=$(grep "${preq}" <<< "${qualsF}")
+  lc=$(wc -l <<< "${quals2}")
+  [ "$lc" -ge "1" ] && qualsF="${quals2}"
+  #quals2=$(
+  grep "${preb}_" <<< "${qualsF}" >&2
+  lc=$(wc -l <<< "${quals2}")
+  [ "$lc" -ge "1" ] && qualsF="${quals2}"
+  qual=$(sed 1q <<< "${qualsF}")
+  [ "$qual" == "" ] && qual=$(sed 1q <<< "${quals}")
+else
+  qual=$(_menu 10 "Quality" <<< "$quals") || return 1
+fi
+}
+streamselect(){
+#preselect="126 kbps132459_M4A"
+preselect="${1}"
+streaminfos=$(cat -)
+pref=$(awk '{print $3}' FS='{x}' <<< "$preselect")
+preq=$(awk '{print $1}' FS='{x}' <<< "$preselect")
+preb=$(awk '{print $2}' FS='{x}' <<< "$preselect")
+
+quals=$(jq -j '.[]|.quality,.bitrate,"_",.format,"\n"' <<< "${streaminfos}")
+xquals=$(grep "${pref}$" <<< "${quals}")
+fquals=$(grep "^${preq}" <<< "${xquals}") || fquals="${xquals}" # echo "qual not found" >&2
+xquals=$(grep "${preb}" <<< "${fquals}") || xquals="${fquals}"
+qual=$(sed 1q <<< "${xquals}")
+echo "sel $qual" >&2
+declare -i index
+index=$(grep -n "$qual" <<< "$quals" | awk '{print $1}' FS=':')
+index=$(($index-1))
+jq -r ".[$index]" <<< "${streaminfos}"
+}
+[ "$(type -t _menu)" == "function" ]                    || source sh/_menu.src
