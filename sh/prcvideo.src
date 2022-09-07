@@ -80,7 +80,14 @@ prcvideo(){
         currpresel=$(awk '{print $1}' FS='{!}' <<< "${tmp}")
 	preselect=$(awk '{print $2}' FS='{!}' <<< "${tmp}")
         stream=$(jq -r '.audioStreams' <<< "${vinf}" | streamselect "${currpresel}" | jq -r '.url')
-	mpv "$stream" --no-ytdl || echo "failed" >&2
+	mpv "${stream}" --no-ytdl || echo "failed" >&2
+      ;;
+      "listen-gui")
+        tmp=$(poppresel <<< "${preselect}")
+        currpresel=$(awk '{print $1}' FS='{!}' <<< "${tmp}")
+	preselect=$(awk '{print $2}' FS='{!}' <<< "${tmp}")
+        stream=$(jq -r '.audioStreams' <<< "${vinf}" | streamselect "${currpresel}" | jq -r '.url')
+	mpv "${stream}" --no-ytdl --profile=pseudo-gui || echo "failed" >&2
       ;;
       "view&")
         stream=$(jq -r '.hls' <<< "${vinf}")

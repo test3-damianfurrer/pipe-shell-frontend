@@ -1,5 +1,5 @@
 #!/bin/sh
-set -e
+#set -e
 # in .videoStreams
 streamselect(){
 #preselect="126 kbps132459_M4A"
@@ -22,7 +22,7 @@ echo "preb: $preb" >&2
   lc=$(wc -l <<< "${quals2}")
   [ "$lc" -ge "1" ] && qualsF="${quals2}"
   #quals2=$(
-  grep "${preb}_" <<< "${qualsF}" >&2
+#  grep "${preb}_" <<< "${qualsF}" >&2
   lc=$(wc -l <<< "${quals2}")
   [ "$lc" -ge "1" ] && qualsF="${quals2}"
   qual=$(sed 1q <<< "${qualsF}")
