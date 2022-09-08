@@ -7,6 +7,11 @@ preselect="${1}"
 streaminfos=$(cat -)
 #echo "${streaminfos}" >&2
 quals=$(jq -j '.[]|.quality,.bitrate,"_",.format,"\n"' <<< "${streaminfos}")
+urlout="null"
+while [ "$urlout" == "null" ] #sometimes stream urls can be null
+do
+quals=$(grep -v "^${qual}$" <<< "${quals}")
+[ "$quals" == "" ] && return 1
 if [ "$preselect" != "" ]; then
 pref=$(awk '{print $3}' FS='{x}' <<< "$preselect")
 preq=$(awk '{print $1}' FS='{x}' <<< "$preselect")
@@ -34,6 +39,8 @@ echo "sel $qual" >&2
 declare -i index
 index=$(grep -n "$qual" <<< "$quals" | awk '{print $1}' FS=':')
 index=$(($index-1))
-jq -r ".[$index]" <<< "${streaminfos}"
+urlout=$(jq -r ".[$index]" <<< "${streaminfos}")
+done
+echo "${urlout}"
 }
 [ "$(type -t _menu)" == "function" ]                    || source sh/_menu.src

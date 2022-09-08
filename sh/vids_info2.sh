@@ -3,7 +3,7 @@ chnldir=$(pwd)
 mkdir -p _duration
 mkdir -p  _uploaded
 mkdir -p _title
-cd ../../videos
+cd ../../../videos
 mkdir -p _duration
 mkdir -p _uploaded
 [ "${2}" == "" ] && exit 1
@@ -30,14 +30,16 @@ ln -s -f -- "../${2}" "${11}_${titleesc}"
 cd ../_uploaded
 ln -s -f -- "../${2}" "${uploaded}_${titleesc}"
 
-cd "../../channel_ids/${1}"
+#cd "../../channel_ids/${1}"
+##test
+cd "${chnldir}"
 #mkdir -p _duration
 #mkdir -p _uploaded
 cd _duration
-ln -s -f -- "../../../videos/${2}" "${11}_${titleesc}"
+ln -s -f -- "../../../../videos/${2}" "${11}_${titleesc}"
 cd ../_uploaded
-ln -s -f -- "../../../videos/${2}" "${uploaded}_${titleesc}"
+ln -s -f -- "../../../../videos/${2}" "${uploaded}_${titleesc}"
 cd ../_title
-ln -s -f -- "../../../videos/${2}" "${titleesc}"
+ln -s -f -- "../../../../videos/${2}" "${titleesc}"
 cd ..
 

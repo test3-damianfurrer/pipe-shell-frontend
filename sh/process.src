@@ -2,13 +2,13 @@
 process(){
 relstrm=$(cat - | sed 's/|/¬Ipipe¬/g')
 [ "$1" == "" ] && return 1
-cd "channel_ids/${1}"
+cd "channels/byid/${1}"
 
 mix=$(jq -rj '.id,"|",.title,"|",.thumbnail,"|",.uploaderName,"|",.uploaderUrl,"|",.url,"|",.uploadedDate,"|",.uploaded,"|",.uploaderVerified,"|",.duration,"|",.views,"|"' <<< "${relstrm}")
 
-[ -d "../../videos" ] || mkdir -p ../../videos
+[ -d "../../../videos" ] || mkdir -p ../../../videos
 
-tr '|' '\0' <<< "${mix}" | sed 's/¬Ipipe¬/|/g' | xargs -0 -P 0 -n 11 ../../sh/vids_info2.sh "${1}"
+tr '|' '\0' <<< "${mix}" | sed 's/¬Ipipe¬/|/g' | xargs -0 -P 0 -n 11 ../../../sh/vids_info2.sh "${1}"
 
 
 }

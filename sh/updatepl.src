@@ -7,8 +7,8 @@ x=$(ps | wc -l)
 
 while read line
 do
-#   update_playlist "${line}" "&" > /dev/null 2>&1 &
-   update_playlist "${line}" "" > /dev/null 2>&1
+   update_playlist "${line}" "&" > /dev/null 2>&1 &
+#   update_playlist "${line}" "" # > /dev/null 2>&1
 done <<< $list
 y=$(ps | wc -l)
 

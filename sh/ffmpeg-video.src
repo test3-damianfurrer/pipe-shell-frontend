@@ -13,7 +13,7 @@ cacheopt="--no-cache"
 [ "$loop" == "" ] && loop="0"
 
 videostrm=$(jq -r '.videoStreams' <<< "${streams}" | streamselect "${vidsel}") || return 1
->&2 echo "$videostrm"
+#>&2 echo "$videostrm"
 video=$(jq -r ".url" <<< "${videostrm}")
 vidonly=$(jq -r ".videoOnly" <<< "${videostrm}")
 
