@@ -1,10 +1,11 @@
 #!/bin/sh
 search_video_prcloop(){
-relstream=$(cat -)
+#relstream=$(cat -)
 while read relv
 do
 	prcvideo "$relv"
-done <<< $(search_video_prc <<< "${relstream}")
+done <<< $(search_video_prc < /dev/stdin)
+# <<< $(search_video_prc <<< "${relstream}")
 }
 [ "$(type -t prcvideo)" == "function" ] || source ./sh/prcvideo.src
 [ "$(type -t search_video_prc)" == "function" ] || source ./sh/search-video-prc.src
