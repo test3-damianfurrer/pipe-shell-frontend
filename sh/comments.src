@@ -18,8 +18,7 @@ prccomment(){
   xmessage -file - -buttons "$buttons" -default "$default" <<< "${commentText}"
   case $? in
   10)
-    curl "https://damianfurrer.ch/yt/nextpage/comments/$vidid?nextpage=${replies}" 2>/dev/null | prccomments "$1" "${currind}" || return 1
-    #curl "https://damianfurrer.ch/yt/nextpage/comments/$vidid?nextpage=${replies}" | prccomments "$1" "${currind}" || return 1
+    _pipedget "nextpage/comments/$vidid?nextpage=${replies}" | prccomments "$1" "${currind}" || return 1
   ;;
   100)
     return 1
@@ -47,16 +46,14 @@ prccomments(){
 	  local i+=1
 	  local subcomment=$(jq -r ".comments[$i]" <<< "${vidcomments}")
 	else
-#	  echo "1" >&2
 	  local subcomment="null"
 	fi
   done
-#>&2 echo "exit subcomments"
   if [ "$x" != "1" ]; then
     local nextpage=$(jq -r '.nextpage' <<< "${vidcomments}" | jq -sRr @uri)
-    [ "$nextpage" != "null%0A" ] && curl "https://damianfurrer.ch/yt/nextpage/comments/$1?nextpage=${nextpage}" 2>/dev/null | prccomments "$vidid"
+    [ "$nextpage" != "null%0A" ] && _pipedget "nextpage/comments/$1?nextpage=${nextpage}" | prccomments "$vidid"
   fi
-#  [ "$nextpage" != "null%0A" ] && curl "https://damianfurrer.ch/yt/nextpage/comments/$1?nextpage=${nextpage}" | prccomments "$vidid"
-#>&2 echo "eof"
   return 0 #without this additional instruction it exits entirely after first subcomment exit
 }
+
+[ "$(type -t _pipedget)" == "function" ] || source sh/_pipedget.src

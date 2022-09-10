@@ -15,7 +15,7 @@ prcvideo(){
   tmp=$(poppresel <<< "${preselect}")
   currpresel=$(awk '{print $1}' FS='{!}' <<< "${tmp}")
   preselect=$(awk '{print $2}' FS='{!}' <<< "${tmp}")
-  vinf=$(curl "https://damianfurrer.ch/yt/streams/$1" 2>/dev/null)
+  vinf=$(_pipedget "streams/$1")
 
   title=$(jq -r '.title' <<< "${vinf}")
   relstream=""
@@ -154,3 +154,4 @@ prcvideo(){
 [ "$(type -t showcomments)" == "function" ] || source ./sh/showcomments.src
 [ "$(type -t _menu)" == "function" ]                    || source sh/_menu.src
 [ "$(type -t _thumbsel)" == "function" ]            || source sh/_thumbsel.src
+[ "$(type -t _pipedget)" == "function" ] || source sh/_pipedget.src

@@ -2,9 +2,8 @@
 showcomments(){
 
 vidid="$1"
-curl "https://damianfurrer.ch/yt/comments/$vidid" 2>/dev/null | prccomments "$vidid" ""
-
-#curl "https://damianfurrer.ch/yt/comments/$vidid" || echo "failed" >&2
+_pipedget "comments/$vidid" | prccomments "$vidid" ""
 }
 
 [ "$(type -t comments)" == "function" ] || source ./sh/comments.src
+[ "$(type -t _pipedget)" == "function" ] || source sh/_pipedget.src

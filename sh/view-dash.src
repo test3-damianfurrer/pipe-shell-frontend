@@ -1,6 +1,6 @@
 #!/bin/sh
 #set -e
-#streams=$(curl "https://damianfurrer.ch/yt/streams/t_ZhpTTng0w" 2>/dev/null)
+#streams=$(curl "streams/t_ZhpTTng0w" 2>/dev/null)
 #ffmpeg -i "${1}" -map 0:a:0 -map 0:v:0 -c:a copy -c:v copy -f matroska - | mpv - --no-ytdl
 # requires useflag libxml2 for ffmpeg to enable dash demuxing
 view_dash(){

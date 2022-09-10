@@ -42,7 +42,7 @@ do
 	nextpage=$(jq -r '.nextpage' <<< "${playlistinfo}" | jq -sRr @uri) #| sed 's/\\"/"/g' | sed 's/\&/%26/g')
 	#save info before
 	[ "$info" == "" ] && info=$(jq -r '.bannerUrl,.name,.thumbnailUrl,.uploader,.uploaderAvatar,.uploaderUrl,.videos' <<< "${playlistinfo}")
-        playlistinfo=$(curl "https://damianfurrer.ch/yt/nextpage/playlists/$1?nextpage=${nextpage}" 2> /dev/null)
+        playlistinfo=$(_pipedget "nextpage/playlists/$1?nextpage=${nextpage}")
         menu=$(menutext "prev")
 	sel="videos"
   ;;
@@ -59,6 +59,7 @@ done
 [ "$(type -t getplaylist)" == "function" ] 		|| source ./sh/getplaylist.src
 [ "$(type -t setupplaylist)" == "function" ] 		|| source ./sh/setupplaylist.src
 [ "$(type -t _menu)" == "function" ]                    || source sh/_menu.src
+[ "$(type -t _pipedget)" == "function" ] 		|| source sh/_pipedget.src
 
 keys(){
 

@@ -1,4 +1,6 @@
 #!/bin/sh
 getchannel(){
-curl "https://damianfurrer.ch/yt/channel/${1}" 2> /dev/null
+_pipedget "channel/${1}"
 }
+
+[ "$(type -t _pipedget)" == "function" ] || source sh/_pipedget.src

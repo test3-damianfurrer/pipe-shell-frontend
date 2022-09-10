@@ -20,7 +20,7 @@ nextpage=$(cat -)
 [ "$nextpage" == "null" ] && return 0
 nextpage=$(jq -sRr @uri <<< "${nextpage}")
 
-nextpage=$(curl "https://damianfurrer.ch/yt/nextpage/playlists/$1?nextpage=${nextpage}" 2>/dev/null)
+nextpage=$(_pipedget "nextpage/playlists/$1?nextpage=${nextpage}")
 jq '.relatedStreams[]' <<< "${nextpage}" | prcrelstrms "${1}"
 jq -r '.nextpage' <<< "${nextpage}" | setupplaylistnextpage "${1}"
 }
@@ -41,3 +41,4 @@ ln -s -f "$PWD/playlists/byid/${1}" "$PWD/playlists/byname/${name}"
 }
 
 [ "$(type -t process)" == "function" ] || source ./sh/process.src
+[ "$(type -t _pipedget)" == "function" ] || source sh/_pipedget.src

@@ -15,7 +15,7 @@ prcvideo(){
   tmp=$(poppresel <<< "${preselect}")
   currpresel=$(awk '{print $1}' FS='{!}' <<< "${tmp}")
   preselect=$(awk '{print $2}' FS='{!}' <<< "${tmp}")
-#  vinf=$(curl "https://damianfurrer.ch/yt/streams/$1" 2>/dev/null)
+#  vinf=$(curl "streams/$1" 2>/dev/null)
   vinf=$(cat 'inf.json' 2>/dev/null)
   grep -c -m 1 '^<!doctype html>' <<< "${vinf}" >/dev/null && echo "fail dl" >&2 && return 1
 

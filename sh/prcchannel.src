@@ -4,7 +4,7 @@
 prcchannel(){
 mkdir -p find
 menu=$(echo "videos";echo "next page";echo "subscribe";echo "exit";)
-channelinfo=$(curl "https://damianfurrer.ch/yt/channel/$1" 2>/dev/null)
+channelinfo=$(getchannel "$1" 2>/dev/null)
 chnlname=$(jq -r '.name' <<< "${channelinfo}")
 sel=$(_menu 5 "$chnlname" <<< "$menu")
 while [ "$sel" != "exit" ]
@@ -28,7 +28,7 @@ do
         menu=$(echo "videos";echo "next page";echo "prev page"; echo "subscribe";echo "exit";)
 	prevpage=$(echo "${channelinfo}")
 	nextpage=$(jq -r '.nextpage' <<< "${channelinfo}" | jq -sRr @uri) #| sed 's/\\"/"/g' | sed 's/\&/%26/g')
-        channelinfo=$(curl "https://damianfurrer.ch/yt/nextpage/channel/$1?nextpage=${nextpage}" 2> /dev/null)
+        channelinfo=$(_pipedget "nextpage/channel/$1?nextpage=${nextpage}")
 	sel="videos"
   ;;
   *)
@@ -38,12 +38,8 @@ do
 
 done
 }
-#exit
-##curl "https://damianfurrer.ch/yt/search?q=${1}&filter=videos" 2>/dev/null 
-#cat result.json | jq '.items[]' > "result.json"
-#cd ..
-##./sh/search-video-prc.sh
 [ "$(type -t search_video_prcloop)" == "function" ] 	|| source ./sh/search-video-prcloop.src
 [ "$(type -t getchannel)" == "function" ] 		|| source ./sh/getchannel.src
 [ "$(type -t setup)" == "function" ] 			|| source ./sh/setup.src
 [ "$(type -t _menu)" == "function" ] 			|| source sh/_menu.src
+[ "$(type -t _pipedget)" == "function" ] 		|| source sh/_pipedget.src

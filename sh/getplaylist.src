@@ -2,8 +2,10 @@
 #$1 channel id
 
 getplaylist(){
-ret=$(curl "https://damianfurrer.ch/yt/playlists/${1}" 2>/dev/null)
+ret=$(_pipedget "playlists/${1}")
 err=$(jq -r '.error' <<< "${ret}")
 [ "$err" != "null" ] && (echo "Error getplaylist():"; echo "${err}") >&2 && return 0
 echo "${ret}"
 }
+
+[ "$(type -t _pipedget)" == "function" ] || source sh/_pipedget.src

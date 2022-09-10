@@ -1,0 +1,4 @@
+#!/bin/sh
+_pipedget(){
+  curl "https://damianfurrer.ch/yt/${1}" 2>/dev/null
+}

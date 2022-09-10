@@ -3,8 +3,7 @@ search_channel(){
 mkdir -p find
 cd find
 nm=$(urlencode <<< "${1}")
-#wget -q -O "result.json" "https://damianfurrer.ch/yt/search?q=${1}&filter=channels"
-result=$(curl "https://damianfurrer.ch/yt/search?q=${nm}&filter=channels" 2> /dev/null)
+result=$(_pipedget "search?q=${nm}&filter=channels")
 names=$(jq -r '.items[].name' <<< "${result}")
 thumbs=$(jq -r '.items[].thumbnail' <<< "${result}")
 urls=$(jq -r '.items[].url'  <<< "${result}")
@@ -35,4 +34,5 @@ cd ..
 cd ..
 }
 [ "$(type -t urlencode)" == "function" ] || source ./sh/urlencode.src
-[ "$(type -t _thumbsel)" == "function" ]            || source sh/_thumbsel.src
+[ "$(type -t _thumbsel)" == "function" ] || source sh/_thumbsel.src
+[ "$(type -t _pipedget)" == "function" ] || source sh/_pipedget.src

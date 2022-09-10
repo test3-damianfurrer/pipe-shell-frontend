@@ -1,7 +1,7 @@
 #!/bin/sh
 
 vidinfo(){
-##  vinf=$(curl "https://damianfurrer.ch/yt/streams/$1" 2>/dev/null)
+##  vinf=$(curl "streams/$1" 2>/dev/null)
 vinf=$(cat -)
 [ "$1" == "" ] && exit
 inf="$2"
