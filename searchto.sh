@@ -17,4 +17,4 @@ url=$(urlencode <<< "$1")
 # 2>/dev/null
 #_pipedget "search?q=${url}&filter=videos" | jq -r '.items[].id' | prcloop # | search_video_prcloop
 _pipedget "search?q=${url}&filter=videos" | jq -r '.items[]' | search_video "${1}" | prcvideo_loop \
-"view+{;}listen{;}126 kbps{x}132459{x}M4A{;}next"
+"listen{;}126 kbps{x}132459{x}M4A{;}next"
