@@ -1,0 +1,24 @@
+#!/bin/sh
+process_single(){
+#relstrm=$(cat - | sed 's/|/¬Ipipe¬/g')
+#[ -d "videos" ] || mkdir -p videos
+#source sh/_pipedget
+json=$(_pipedget "streams/$1")
+
+title=$(jq -r '.title' <<< "${json}")
+thumb=$(jq -r '.thumbnailUrl' <<< "${json}")
+uplName=$(jq -r '.uploader' <<< "${json}")
+uplUrl=$(jq -r '.uploaderUrl' <<< "${json}")
+url="$1" #jq -r '.url' <<< "${json}"
+uploadedDate=$(jq -r '.uploadDate' <<< "${json}") 
+uploaded="-1" #jq -r '.uploaded' <<< "${json}" #unavailable --> check extractor software #jq -r '.upload' <<< "${json}"
+uplVerified=$(jq -r '.uploaderVerified' <<< "${json}")
+duration=$(jq -r '.duration' <<< "${json}")
+views=$(jq -r '.views' <<< "${json}")
+./sh/vids_infoindep.sh "" "$1" "${title}" "${thumb}" "${uplName}" "${uplUrl}" "${url}" "${uploadedDate}" "${uploaded}" "${uplVerified}" "${duration}" "${views}"
+#mix=$(jq -rj '.id,"|",.title,"|",.thumbnail,"|",.uploaderName,"|",.uploaderUrl,"|",.url,"|",.uploadedDate,"|",.uploaded,"|",.uploaderVerified,"|",.duration,"|",.views,"|"' <<< "${relstrm}")
+#exit
+#tr '|' '\0' <<< "${mix}" | sed 's/¬Ipipe¬/|/g' | xargs -0 -P 0 -n 11 ../../../sh/vids_info2.sh "${1}"
+
+}
+[ "$(type -t _pipedget)" == "function" ] || source sh/_pipedget.src

@@ -7,6 +7,6 @@ update_chnl(){
   if [ "$1" != "" ]; then
     chnljson=$(getchannel "${1}")
     lvid=$(jq -r '.relatedStreams[0].id' <<< "${chnljson}")
-  [ -d "videos/$lvid" ] || setup <<< "${chnljson}" 1>&2 $2
+  [ -e "videos/$lvid/channel" ] || setup <<< "${chnljson}" 1>&2 $2
   fi
 }

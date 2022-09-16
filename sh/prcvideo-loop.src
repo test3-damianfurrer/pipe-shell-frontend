@@ -1,0 +1,9 @@
+#!/bin/bash
+prcvideo_loop(){
+while read id
+do
+prcvideo "${id}" "${1}"
+done < /dev/stdin
+}
+
+[ "$(type -t prcvideo)" == "function" ] || source ./sh/prcvideo.src

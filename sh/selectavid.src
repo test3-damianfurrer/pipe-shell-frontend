@@ -1,5 +1,9 @@
 #!/bin/sh
 #$1 channelname or videos for all
+getselectionmodes(){
+echo ""
+echo "newest"; echo "shortest"; echo "oldest"; echo "longest"; echo "random"
+}
 selectavid(){
 if [ "$1" == "" ]; then
   >&2 echo "Pass name!"
@@ -7,7 +11,8 @@ if [ "$1" == "" ]; then
 fi
 order="${2}"
 index="$3"
-[ "$order" == "" ] && order=$((echo "newest"; echo "shortest"; echo "oldest"; echo "longest"; echo "random") | _menu 5 "Sorting: ")
+#[ "$order" == "" ] && order=$((echo "newest"; echo "shortest"; echo "oldest"; echo "longest"; echo "random") | _menu 5 "Sorting: ")
+[ "$order" == "" ] && order=$(getselectionmodes | _menu 5 "Sorting: ")
 
 [ "$order" == "" ] && exit 1
 
@@ -40,9 +45,9 @@ if [ "$index" == "" ]; then
       vidfolder=$(ls | awk '{print $0,gsub("^[-0-9]{1,}_","",$0),$0}' OFS="/" | sed 's/\/[-0-9]\//\//' | shuf | head -n 100 | _thumbselOne | awk '{print $1}' FS='/')
   else
     if [ "$reverse" == "" ]; then
-      vidfolder=$(ls | awk '{print $0,gsub("^[-0-9]{1,}_","",$0),$0}' OFS="/" | sed 's/\/[-0-9]\//\//' | sort -n -r | head -n 100 | _thumbselOne | awk '{print $1}' FS='/')
+      vidfolder=$(ls | awk '{print $0,gsub("^[-0-9]{1,}_","",$0),$0}' OFS="/" | sed 's/\/[-0-9]\//\//' | sort -n -r 2>/dev/null | head -n 100 | _thumbselOne | awk '{print $1}' FS='/')
     else
-      vidfolder=$(ls | awk '{print $0,gsub("^[-0-9]{1,}_","",$0),$0}' OFS="/" | sed 's/\/[-0-9]\//\//' | sort -n | head -n 100 | _thumbselOne | awk '{print $1}' FS='/')
+      vidfolder=$(ls | awk '{print $0,gsub("^[-0-9]{1,}_","",$0),$0}' OFS="/" | sed 's/\/[-0-9]\//\//' | sort -n 2>/dev/null | head -n 100 | _thumbselOne | awk '{print $1}' FS='/')
     fi
   fi
 else
@@ -51,9 +56,9 @@ else
       vidfolder=$(ls | awk '{print $0,gsub("^[-0-9]{1,}_","",$0),$0}' OFS="/" | sed 's/\/[-0-9]\//\//' | shuf | head -n 100 | awk 'NR=='"$index"' {print $1}' FS='/')
   else
     if [ "$reverse" == "" ]; then
-      vidfolder=$(ls | awk '{print $0,gsub("^[-0-9]{1,}_","",$0),$0}' OFS="/" | sed 's/\/[-0-9]\//\//' | sort -n -r | head -n 100 | awk 'NR=='"$index"' {print $1}' FS='/')
+      vidfolder=$(ls | awk '{print $0,gsub("^[-0-9]{1,}_","",$0),$0}' OFS="/" | sed 's/\/[-0-9]\//\//' | sort -n -r 2>/dev/null | head -n 100 | awk 'NR=='"$index"' {print $1}' FS='/')
     else
-      vidfolder=$(ls | awk '{print $0,gsub("^[-0-9]{1,}_","",$0),$0}' OFS="/" | sed 's/\/[-0-9]\//\//' | sort -n | head -n 100 | _thumbselOne | awk 'NR=='"$index"' {print $1}' FS='/')
+      vidfolder=$(ls | awk '{print $0,gsub("^[-0-9]{1,}_","",$0),$0}' OFS="/" | sed 's/\/[-0-9]\//\//' | sort -n 2>/dev/null | head -n 100 | _thumbselOne | awk 'NR=='"$index"' {print $1}' FS='/')
     fi
   fi
 fi

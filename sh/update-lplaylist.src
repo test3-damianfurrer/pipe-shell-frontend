@@ -1,0 +1,24 @@
+#!/bin/bash
+update_lplaylist(){
+#addvidids=$(cat -)
+workdir=$(pwd -P)
+id="$1"
+rm -r playlists/byid/$id/_title
+rm -r playlists/byid/$id/_duration
+rm -r playlists/byid/$id/_uploaded
+mkdir -p playlists/byid/$id/_title
+mkdir -p playlists/byid/$id/_duration
+mkdir -p playlists/byid/$id/_uploaded
+
+#ls -F playlists/byname/irish\ music/ | grep '@$' | sed 's/@$//'
+cp -P playlists/byid/$id/_local.depends/*/_title/* playlists/byid/$id/_title/
+cp -P playlists/byid/$id/_local.depends/*/_uploaded/* playlists/byid/$id/_uploaded/
+cp -P playlists/byid/$id/_local.depends/*/_duration/* playlists/byid/$id/_duration/
+cp -P playlists/byid/$id/_local.duration/* playlists/byid/$id/_duration
+cp -P playlists/byid/$id/_local.title/* playlists/byid/$id/_title
+cp -P playlists/byid/$id/_local.uploaded/* playlists/byid/$id/_uploaded
+
+#_duration  info.json  _title  _uploaded
+}
+
+[ "$(type -t process_single)" == "function" ] || source sh/process-single.src

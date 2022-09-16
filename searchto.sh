@@ -1,6 +1,7 @@
 #!/bin/bash
+
 ./sh/update-ifseq.sh
-[ "$(type -t prcvideo)" == "function" ] || source ./sh/prcvideo.src
+[ "$(type -t prcvideo_loop)" == "function" ] || source ./sh/prcvideo-loop.src
 [ "$(type -t search_video)" == "function" ] || source ./sh/search-video.src
 [ "$(type -t search_video_prcloop)" == "function" ] || source ./sh/search-video-prcloop.src
 [ "$(type -t urlencode)" == "function" ] || source ./sh/urlencode.src
@@ -14,5 +15,6 @@
 #        ./sh/search-video-prcloop.sh <<< "${relstream}"
 url=$(urlencode <<< "$1")
 # 2>/dev/null
-_pipedget "search?q=${url}&filter=videos" | jq '.items[]' | search_video_prcloop
-
+#_pipedget "search?q=${url}&filter=videos" | jq -r '.items[].id' | prcloop # | search_video_prcloop
+_pipedget "search?q=${url}&filter=videos" | jq -r '.items[]' | search_video "${1}" | prcvideo_loop \
+"view+{;}listen{;}126 kbps{x}132459{x}M4A{;}next"
