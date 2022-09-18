@@ -3,8 +3,8 @@
 update_ifdolong(){
 cmd="${1}"
 [ "$cmd" == "" ] && cmd="update_seq"
-lastchng=$(stat -c %Y "${2}.upds")
 [ -e "${2}.upds" ] || lastchng=0
+[ -e "${2}.upds" ] && lastchng=$(stat -c %Y "${2}.upds")
 mintime=$(date -d '8 hours ago' +%s)
 if [ $lastchng -lt $mintime ]; then
   $cmd < /dev/stdin
