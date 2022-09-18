@@ -11,9 +11,11 @@ mkdir -p playlists/byid/$id/_duration
 mkdir -p playlists/byid/$id/_uploaded
 
 #ls -F playlists/byname/irish\ music/ | grep '@$' | sed 's/@$//'
-cp -P playlists/byid/$id/_local.depends/*/_title/* playlists/byid/$id/_title/
-cp -P playlists/byid/$id/_local.depends/*/_uploaded/* playlists/byid/$id/_uploaded/
-cp -P playlists/byid/$id/_local.depends/*/_duration/* playlists/byid/$id/_duration/
+if ls playlists/byid/$id/_local.depends/ | grep "" -q; then
+  cp -P playlists/byid/$id/_local.depends/*/_title/* playlists/byid/$id/_title/
+  cp -P playlists/byid/$id/_local.depends/*/_uploaded/* playlists/byid/$id/_uploaded/
+  cp -P playlists/byid/$id/_local.depends/*/_duration/* playlists/byid/$id/_duration/
+fi
 cp -P playlists/byid/$id/_local.duration/* playlists/byid/$id/_duration
 cp -P playlists/byid/$id/_local.title/* playlists/byid/$id/_title
 cp -P playlists/byid/$id/_local.uploaded/* playlists/byid/$id/_uploaded

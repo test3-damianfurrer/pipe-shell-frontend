@@ -1,8 +1,8 @@
 #!/bin/sh
 #$1 channelname or videos for all
 getselectionmodes(){
-echo ""
 echo "newest"; echo "shortest"; echo "oldest"; echo "longest"; echo "random"
+echo ""
 }
 selectavid(){
 if [ "$1" == "" ]; then
@@ -12,7 +12,7 @@ fi
 order="${2}"
 index="$3"
 #[ "$order" == "" ] && order=$((echo "newest"; echo "shortest"; echo "oldest"; echo "longest"; echo "random") | _menu 5 "Sorting: ")
-[ "$order" == "" ] && order=$(getselectionmodes | _menu 5 "Sorting: ")
+[ "$order" == "" ] && order=$(getselectionmodes | _menu 6 "Sorting: ")
 
 [ "$order" == "" ] && exit 1
 

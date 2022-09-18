@@ -13,16 +13,15 @@ addto_playlist(){
 
 add_lplaylist(){
   id=""
-  [ -e "playlists/byname/${1}" ] && id=$(playlist_nametoid "${1}")
-  echo "$id" | grep -q "^local_" || mv "playlists/byname/${1}" "playlists/byname/${1}_${id}"
   if [ -e "playlists/byname/${1}" ]; then
-	#
+	id=$(playlist_nametoid "${1}")
+	echo "$id" | grep -q "^local_" || mv "playlists/byname/${1}" "playlists/byname/${1}_${id}"
 	>&2 echo "allready local, add"
 	addto_lplaylistid "$id" < /dev/stdin
   else
 	#
 	>&2 echo "create pl"
-	create_lplaylist "${1}" "$id" < /dev/stdin
+	create_lplaylist "${1}" < /dev/stdin
   fi
 }
 
@@ -62,6 +61,7 @@ workdir=$(pwd -P) #  | tee /dev/stderr)
 id="$1"
 while read inpid
 do
+  if [ "$inpid" ]; then
 	echo "$inpid" >&2
 	process_single "$inpid" # "feRCZyLzAwA"
 	title=$(cat "videos/$inpid/_title.txt" | tee /dev/stderr)
@@ -70,6 +70,7 @@ do
 	ln -s -f "${workdir}/videos/$inpid" "playlists/byid/$id/_local.title/${title}"
 	ln -s -f "${workdir}/videos/$inpid" "playlists/byid/$id/_local.uploaded/${uploaded}"
 	ln -s -f "${workdir}/videos/$inpid" "playlists/byid/$id/_local.duration/${duration}"
+  fi
 done < /dev/stdin
 update_lplaylist "$id"
 }
