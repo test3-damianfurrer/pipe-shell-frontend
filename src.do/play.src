@@ -1,0 +1,82 @@
+#!/bin/bash
+functions=$(echo "${functions}";echo "play";echo "doplaylistid";echo "dovidid";echo "doallplay";echo "listenall";echo "viewall")
+#echo "play"
+play(){
+#!/bin/bash
+#$1 channelname
+./sh/update-ifseq.sh
+
+source ./sh/selectavid.src
+source ./sh/prcvideo.src
+
+folder=$(echo "${1}" | sed 's/\/$//')
+if [ "$folder" == "" ]; then
+        #>&2 echo "Pass name!"
+        #exit 1
+        folder="videos"
+fi
+while [ $? -eq 0 ]
+do
+  id=$(selectavid "${folder}") || exit 1
+  ./do.sh "update" &
+  prcvideo "${id}"
+
+done
+}
+
+doplaylistid(){
+# $1 playlistid
+source sh/prcplaylist.src
+source sh/_menu.src
+if [ "$1" != "" ]; then
+  prcplaylist "$1"
+else
+  prcplaylist $(cat play.list | _menu 10 'list' | awk '{print $1}' FS=';')
+fi
+}
+
+dovidid(){
+#$1 id
+#source ./sh/selectavid.src
+./sh/update-ifseq.sh
+source ./sh/prcvideo.src
+prcvideo "${1}" &
+./do.sh "update"
+}
+
+doallplay(){
+#$1 channelname
+./sh/update-ifseq.sh
+
+source ./sh/selectavid.src
+source ./sh/prcvideo.src
+
+folder=$(echo "${1}" | sed 's/\/$//')
+if [ "$folder" == "" ]; then
+        folder="videos"
+fi
+./do.sh "update" &
+sorting=$(getselectionmodes | _menu 5 "Sorting")
+retc=0
+declare -i i
+i=1
+while [ $i -le 100 ]
+do
+  id=$(selectavid "${folder}" "$sorting" $i) || exit 1
+  prcvideo "${id}" "${2}" # "view+{;}qualselect{;}480p{x}530106{x}MPEG_4{v-a}126 kbps{x}132459{x}M4A{;}next" || retc=$?
+  i+=1
+done
+}
+
+listenall(){
+#!/bin/bash
+#$1 channelname
+./do.sh "doallplay" "${1}" "listen{;}126 kbps{x}132459{x}M4A{;}next"
+}
+
+viewall(){
+#!/bin/bash
+#$1 channelname
+./do.sh "doallplay" "${1}" "qualselect{;}480p{x}530106{x}MPEG_4{v-a}126 kbps{x}132459{x}M4A{;}next"
+}
+

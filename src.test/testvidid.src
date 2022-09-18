@@ -1,0 +1,10 @@
+#!/bin/bash
+functions=$(echo "${functions}";echo "test_vidid")
+test_vidid(){
+#$1 id
+#source ./sh/selectavid.src
+#./sh/update-ifseq.sh
+source ./sh/test-prcvideo.src
+prcvideo "${1}" "info-out{;}next"
+#./update.sh
+}

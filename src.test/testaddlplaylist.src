@@ -1,0 +1,13 @@
+#!/bin/bash
+functions=$(echo "${functions}";echo "test_addlplaylist")
+test_addlplaylist(){
+#"$1" vidid(s) to add
+# $2  playlist name
+# $3  optional base playlist()
+set -e
+source sh/create-lplaylist.src
+
+echo "$1" | addto_playlist
+#echo "$1" | add_lplaylist "irish music"
+#echo "$1" | create_lplaylist "${2}" "${3}"
+}

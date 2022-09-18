@@ -1,0 +1,6 @@
+#!/bin/bash
+functions=$(echo "${functions}";echo "help")
+help(){
+echo "functions: ${functions}"
+}
+

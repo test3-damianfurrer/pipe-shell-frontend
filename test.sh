@@ -1,24 +1,21 @@
-#!/bin/sh
-
-teststreamsel(){
-#$1 id
-
-currpresel="48 kbps{x}54796{x}M4A"
-
-source ./sh/test-prcvideo.src
-vinf=$(cat 'inf.json' 2>/dev/null)
-jq -r '.audioStreams[0]' <<< "${vinf}" | ./sh/streamselect
-
-# | jq -j '.[]|.quality,.bitrate,"_",.format,"\n"'
-# | ./sh/streamselect
-# | streamselect "${currpresel}" # > /dev/null
-}
-
-teststreamsel2(){
-#$1 id
-
-for x in {1..1000}
+#!/bin/bash
+sourceall(){
+for f in src.test/*.src
 do
- ./teststreamsel.sh > /dev/null 2> /dev/null
+ source $f
 done
 }
+
+action(){
+    action="$1"
+    [ "$action" ] || action="_"
+    grep -q "^${action}\$" <<< "${functions}" || { >&2 echo "ERROR: action \"${1}\" not found! Try \"help\""; exit 1; }
+
+    $action "${2}" "${3}" "${4}" "${5}"
+}
+sourceall
+#echo "functions: ${functions}"
+called=$(basename "$0")
+[ "$called" == "test.sh" ] && action "${1}" "${2}" "${3}" "${4}" "${5}"
+[ "$called" == "test.sh" ] || action "${called}" "${1}" "${2}" "${3}" "${4}"
+exit

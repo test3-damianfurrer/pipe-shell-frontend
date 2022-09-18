@@ -1,0 +1,16 @@
+#!/bin/bash
+functions=$(echo "${functions}";echo "createplaylist")
+createplaylist(){
+#!/bin/bash
+#"$1" vidid(s) to add
+# $2  playlist name
+# $3  optional base playlist path
+source sh/create-lplaylist.src
+
+baseid=""
+[ "$3" ] && cd "$3" && baseid=$(pwd -P) && baseid=$(basename "${baseid}")
+echo "${baseid}"
+[ "$1" ] && echo "$1" | create_lplaylist "${2}" "${baseid}"
+[ "$1" ] || echo "" | create_lplaylist "${2}" "${baseid}"
+}
+

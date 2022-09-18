@@ -1,0 +1,22 @@
+#!/bin/bash
+functions=$(echo "${functions}";echo "updlocalplaylist";echo "updlocalplaylist_all")
+error(){
+  >&2 echo "$1"
+  exit 1
+}
+updlocalplaylist(){
+[ "$1" ] || error "Needs a playlistid as parameter"
+grep -q "^local_" <<< "$1" || error "Needs to be a local playlist"
+
+source sh/update-lplaylist.src
+update_lplaylist "$1"
+}
+updlocalplaylist_all(){
+source sh/update-lplaylist.src
+for f in playlists/byid/local_*
+do
+[ "$f" == "playlists/byid/local*" ] && exit
+id=$(basename "$f")
+update_lplaylist "$id"
+done
+}
