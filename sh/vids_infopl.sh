@@ -4,14 +4,15 @@ mkdir -p _duration
 mkdir -p _uploaded
 mkdir -p _title
 cd ../../../videos
+[ "$(type -t _thumbdl)" == "function" ]            || source ../sh/_thumbdl.src
+
 mkdir -p _durationpl
 mkdir -p _uploadedpl
 [ "${2}" == "" ] && exit 1
 [ "${5}" == "" ] && exit 1
 mkdir -p -- "${2}"
-[ "$(type -t _thumbdl)" == "function" ]            || source sh/_thumbdl.src
 #wget -q -O "${2}/thumb.webp" "${4}" > /dev/null || ( echo "failed to dl thumb to ${2};${3};${5}"; echo "dump: "; echo "$@"; ) &
-_thumbdl "${2}/thumb.webp" "${4}" "${2}" || ( echo "failed to dl thumb to ${2};${3};${5}"; echo "dump: "; echo "$@"; ) &
+_thumbdl "${2}/thumb.webp" "${4}" "${11}" || ( echo "failed to dl thumb to ${2};${3};${5}"; echo "dump: "; echo "$@"; ) &
 
 echo "$2"  > "${2}/id.txt"
 uploaded="${9}"
