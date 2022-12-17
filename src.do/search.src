@@ -1,6 +1,7 @@
 #!/bin/bash
-functions=$(echo "${functions}";echo "search";echo "searchto")
+functions=$(echo "${functions}";echo "search";echo "searchto";echo "channelsearch")
 search(){
+mkdir -p find
 ./sh/update-ifseq.sh
 [ "$(type -t prcvideo)" == "function" ] || source ./sh/prcvideo.src
 [ "$(type -t search_video)" == "function" ] || source ./sh/search-video.src
@@ -20,6 +21,7 @@ _pipedget "search?q=${url}&filter=videos" | jq '.items[]' | search_video_prcloop
 }
 
 searchto(){
+mkdir -p find
 ./sh/update-ifseq.sh
 [ "$(type -t prcvideo_loop)" == "function" ] || source ./sh/prcvideo-loop.src
 [ "$(type -t search_video)" == "function" ] || source ./sh/search-video.src
@@ -38,4 +40,16 @@ url=$(urlencode <<< "$1")
 #_pipedget "search?q=${url}&filter=videos" | jq -r '.items[].id' | prcloop # | search_video_prcloop
 _pipedget "search?q=${url}&filter=videos" | jq -r '.items[]' | search_video "${1}" | prcvideo_loop \
 "listen{;}126 kbps{x}132459{x}M4A{;}next"
+}
+
+channelsearch(){
+source ./sh/getchannel.src
+source ./sh/search-channel.src
+source ./sh/prcchannel-loop.src
+
+[ "$1" == "" ] && return 1
+res=$(search_channel "${1}")
+[ "$res" != "" ] || return 0
+
+prcchannel_loop <<< "$res"
 }
