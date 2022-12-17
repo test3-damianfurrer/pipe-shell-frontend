@@ -1,7 +1,7 @@
 #!/bin/sh
 
 getactions(){
-  echo "next"; echo "view+"; echo "info"; echo "related"; echo "comments"; echo "addto playlist"; echo "exit"
+  [ "$fved" ] || echo "fview"; echo "next"; echo "view+"; echo "info"; echo "related"; echo "comments"; echo "addto playlist"; echo "exit"
 }
 
 poppresel(){
@@ -44,6 +44,11 @@ prcvideo(){
       ;;
       "view-dash")
 	jq -r '.dash' <<< "${vinf}" | view_dash
+      ;;
+      "fview")
+	nocache=""
+	preselect="720p0_MPEG_4"
+	sel="qualselect"
       ;;
       "qualselect")
         tmp=$(poppresel <<< "${preselect}")
@@ -109,7 +114,8 @@ prcvideo(){
       ;;
       "description")
 	xmsgtext=$(vidinfo "$1" "desc"  <<< "${vinf}")
-	xmessage -file - -default "okay" <<< "$xmsgtext"
+	xmessage -file - -default "okay" -buttons "okay:0,copy:10" <<< "$xmsgtext"
+	[ $? -eq 10 ] && echo "$xmsgtext" >&2
       ;;
       "related")
 	[ "$relstream" == "" ] && relstream=$(jq -r '.relatedStreams[]' <<< "${vinf}")
@@ -129,7 +135,7 @@ prcvideo(){
       ;;
       "info-show")
 	out=0
-	xmessage -file - -default "okay" -buttons "okay:0,description:10,Show Channel:50,ChannelThumb:20,Thumb:30,Copy:40" <<< "$xmsgtext" || out=$?
+	xmessage -file - -default "okay" -buttons "okay:0,description:10,Show Channel:50,ChannelThumb:20,Thumb:30,Copy:40,Share:41" <<< "$xmsgtext" || out=$?
 	case $out in
 	10)
 	  sel="description" ;;
@@ -140,7 +146,9 @@ prcvideo(){
 	  wget -q -O tmp.webp "${thumbnailUrl}"
 	  sel="showtmp" ;;
 	40)
-	  echo "$xmsgtext" >&2;;
+	  echo "$xmsgtext" | tee /dev/stderr | xclip -selection "clipboard";;
+	41)
+	  echo -n "https://youtu.be/$1" | tee /dev/stderr | xclip -selection "clipboard";;
 	50)
 	  prcchannel $(grep "Url: /channel/" <<< "${xmsgtext}" | sed 's/Url: \/channel\///') || sel=""
 	;;
@@ -157,7 +165,9 @@ prcvideo(){
       sel="${currpresel}"
       [ "$currpresel" == "" ] && sel=$(getactions | _menu 5 "${title}" )
     fi
+    fved="X"
   done
+  unset fved
 }
 
 [ "$(type -t ffmpeg_video)" == "function" ] || source ./sh/ffmpeg-video.src

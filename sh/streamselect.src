@@ -4,24 +4,31 @@
 streamselect(){
 #preselect="126 kbps132459_M4A"
 preselect="${1}"
+echo "${1}" >&2
+
 streaminfos=$(cat -)
 #echo "${streaminfos}" >&2
-quals=$(jq -j '.[]|.quality,.bitrate,"_",.format,"\n"' <<< "${streaminfos}")
+quals=$(jq -j '.[]|.quality,.bitrate,"_",.format,"\n"' <<< "${streaminfos}") # | tee /dev/stderr)
 urlout="null"
 while [ "$urlout" == "null" ] #sometimes stream urls can be null
 do
 quals=$(grep -v "^${qual}$" <<< "${quals}")
 [ "$quals" == "" ] && return 1
 if [ "$preselect" != "" ]; then
-pref=$(awk '{print $3}' FS='{x}' <<< "$preselect")
-preq=$(awk '{print $1}' FS='{x}' <<< "$preselect")
-preb=$(awk '{print $2}' FS='{x}' <<< "$preselect"| awk '{print $1}' FS='_')
+#echo "$preselect" | sed 's/_/¬/'
+preselect2=$(echo "$preselect" | sed 's/_/¬/')
+pref=$( echo "$preselect2" | awk '{print $2}' FS='¬')
+preq=$(awk '{print $1}' FS='p' <<< "$preselect")
+preb=$(awk '{print $2}' FS='p' <<< "$preselect2"| awk '{print $1}' FS='¬') #all: {x}
 echo "pref: $pref" >&2
 echo "preq: $preq" >&2
 echo "preb: $preb" >&2
   lc=$(wc -l <<< "${quals}")
-  echo "lines qual: $lc" >&2
-  [ "$lc" -gt "1" ] && qualsF=$(grep "_$pref$" <<< "${quals}")
+#  echo "$preb; $pref; $preq; 
+   echo "lines qual: $lc" >&2
+   qualsa="${quals}"
+  [ "$preb" == "0" ] && qualsa=$(echo "${quals}" | grep "p0_") #   | tee /dev/stderr)
+  [ "$lc" -gt "1" ] && qualsF=$(grep "_$pref$" <<< "${qualsa}") #  | tee /dev/stderr)
   #quals2="${quals}")
   quals2=$(grep "${preq}" <<< "${qualsF}")
   lc=$(wc -l <<< "${quals2}")

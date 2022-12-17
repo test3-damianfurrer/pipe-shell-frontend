@@ -9,7 +9,9 @@ mkdir -p _uploadedpl
 [ "${2}" == "" ] && exit 1
 [ "${5}" == "" ] && exit 1
 mkdir -p -- "${2}"
-wget -q -O "${2}/thumb.webp" "${4}" > /dev/null || ( echo "failed to dl thumb to ${2};${3};${5}"; echo "dump: "; echo "$@"; ) &
+[ "$(type -t _thumbdl)" == "function" ]            || source sh/_thumbdl.src
+#wget -q -O "${2}/thumb.webp" "${4}" > /dev/null || ( echo "failed to dl thumb to ${2};${3};${5}"; echo "dump: "; echo "$@"; ) &
+_thumbdl "${2}/thumb.webp" "${4}" "${2}" || ( echo "failed to dl thumb to ${2};${3};${5}"; echo "dump: "; echo "$@"; ) &
 
 echo "$2"  > "${2}/id.txt"
 uploaded="${9}"

@@ -1,0 +1,8 @@
+#!/bin/sh
+_thumbdl(){
+	#$1 fname
+	#$2 url
+	#($3) duration
+	[ "$3" ] && dmenu -p "Duration $3"
+	wget -q -O "${1}" "${2}" > /dev/null || return 1
+}

@@ -1,0 +1,9 @@
+#!/bin/bash
+prcchannel_loop(){
+while read id
+do
+prcchannel "${id}"
+done < /dev/stdin
+}
+
+[ "$(type -t prcchannel)" == "function" ] || source ./sh/prcchannel.src

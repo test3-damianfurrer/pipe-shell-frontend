@@ -28,6 +28,9 @@ if [ "$order" == "shortest" ]; then
 	order="_duration"
 	reverse="1"
 fi
+if [ "$order" == "longest" ]; then
+	order="_duration"
+fi
 if [ "$order" == "random" ]; then
 	#order="_duration"
         cd "_duration"

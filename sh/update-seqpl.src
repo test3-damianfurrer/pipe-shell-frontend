@@ -10,7 +10,7 @@ update_seqpl(){
   do
 	printf '%s   \r' "$i/$lines"
 	i+=1
-	update_playlist "${line}" "" # "&"
+	update_playlist "${line}" "" || echo "problem at ${line}" >&2 # "&"
   done <<< $list
   [ -e "playlists/.upds" ] && rm playlists/.upds
   [ -e "playlists/.upds" ] || date +%s > playlists/.upds

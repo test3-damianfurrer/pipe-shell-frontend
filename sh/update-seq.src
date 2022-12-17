@@ -10,7 +10,7 @@ update_seq(){
   do
 	printf '%s   \r' "$i/$lines"
 	i+=1
-	update_chnl "${line}" "" # "&"
+	update_chnl "${line}" "" || echo "ERROR: ${line}" # "&"
   done <<< $list
   [ -e ".upds" ] && rm .upds
   [ -e ".upds" ] || date +%s > .upds
