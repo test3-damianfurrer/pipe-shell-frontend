@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <stdlib.h>
+//#include <stdlib.h>
 #define MAX_INT_DECIMALS 10
 char * sbuf;
 
@@ -16,19 +16,20 @@ void printint(int number){
 			sbuf[--i] = (number % 10) + 48;
 			number /= 10;
 		} while(number > 0 && i > 0);
-		i = 0;
+		//i = 0;
 		while (i < MAX_INT_DECIMALS){
 			if(sbuf[i] >= 48){
 				putc(sbuf[i],stdout);
 			}
-			sbuf[i] = 0;
+//			sbuf[i] = 0;
 			i++;
 		}
 	}
 }
 
 int main(int argc, char **argv){
-	sbuf = (char *) calloc (MAX_INT_DECIMALS, sizeof(char));
+	char sbufo[MAX_INT_DECIMALS];
+	sbuf = &sbufo[0];	//(char *) calloc (MAX_INT_DECIMALS, sizeof(char));
 	int number = 0;
 	int charnum = 0;
 	if(argc != 2)
@@ -55,5 +56,5 @@ int main(int argc, char **argv){
 	printint(minutes);
 	putc(':',stdout);
 	printint(seconds);
-	free(sbuf);
+//	free(sbuf);
 }

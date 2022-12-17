@@ -9,7 +9,7 @@ _thumbdl(){
 		wget -q -O "$tmpname.webp" "${2}" > /dev/null || return 1
 
 		#mv "${1}" "${1}-tmp.webp"
-		duration=$(/home/damian/scripts/duration2text/duration2text "$3")
+		duration=$(/home/damian/pip/_c/duration2text "$3")
 		pointsize=16
 		[ "$4" ] && pointsize=$4
 		convert "$tmpname.webp" -background White -pointsize $pointsize label:"$duration" -gravity Center -append "$tmpname-2.webp" || echo "convert failed" >&2
