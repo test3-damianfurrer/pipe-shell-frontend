@@ -27,6 +27,11 @@ jq -r '.nextpage' <<< "${nextpage}" | setupplaylistnextpage "${1}"
 
 setupplaylist(){
 info=$(cat -)
+#echo "$(pwd)" > /home/damian/piptest
+#echo "$PWD" > /home/damian/piptest2
+[ "$1" ] || echo "no playlist id given" >&2
+[ "$1" ] || return 1
+#return 0
 #nextpage=$(jq -r '.nextpage'  <<< "${info}")
 mkdir -p "playlists/byid/${1}"
 mkdir -p "playlists/byname"
@@ -36,7 +41,7 @@ jq -r '.nextpage' <<< "${info}" | setupplaylistnextpage "${1}"
 jq -r '{banner:.bannerUrl,name:.name,thumb:.thumbnailUrl,uploader:.uploader,uploaderAvatar:.uploaderAvatar,uploaderUrl:.uploaderUrl,VidCount:.videos}' <<< "${info}" > "playlists/byid/${1}/info.json"
 name=$(jq -r '.name' <<< "${info}" | sed 's/\//_/g')
 echo "updated playlist: $name" >&2
-ln -s -f "$PWD/playlists/byid/${1}" "$PWD/playlists/byname/${name}"
+[ -e "$PWD/playlists/byid/${1}" ] && ln -s -f "$PWD/playlists/byid/${1}" "$PWD/playlists/byname/${name}"
 
 }
 

@@ -5,7 +5,7 @@
 
 update_playlist(){
   if [ "$1" != "" ]; then
-    pljson=$(getplaylist "${1}")
+    pljson=$(getplaylist "${1}") || echo "error playlist ${1}" >&2
     [ "$pljson" == "null" ] && echo "update_playlist: error null json for $1" >&2
     lvid=$(jq -r '.relatedStreams[0].id' <<< "${pljson}")
   #[ -d "videos/$lvid" ] || 

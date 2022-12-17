@@ -4,7 +4,7 @@
 getplaylist(){
 ret=$(_pipedget "playlists/${1}")
 err=$(jq -r '.error' <<< "${ret}")
-[ "$err" != "null" ] && (echo "Error getplaylist():"; echo "${err}") >&2 && return 0
+[ "$err" != "null" ] && (echo "Error getplaylist( $1 ):"; echo "${err}") >&2 && return 0
 echo "${ret}"
 }
 

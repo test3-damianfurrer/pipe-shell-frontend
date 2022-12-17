@@ -15,9 +15,24 @@ add_lplaylist(){
   id=""
   if [ -e "playlists/byname/${1}" ]; then
 	id=$(playlist_nametoid "${1}")
-	echo "$id" | grep -q "^local_" || mv "playlists/byname/${1}" "playlists/byname/${1}_${id}"
-	>&2 echo "allready local, add"
-	addto_lplaylistid "$id" < /dev/stdin
+	#echo "$id" | grep -q "^local_" || mv "playlists/byname/${1}" "playlists/byname/${1}_${id}"
+	#>&2 echo "allready local, add"
+	#addto_lplaylistid "$id" < /dev/stdin
+	if echo "$id" | grep -q "^local_"; then
+		>&2 echo "allready local, add"
+		addto_lplaylistid "$id" < /dev/stdin
+	else
+		if [ -e "playlists/byname/${1}_${id}" ]; then
+			 mv "playlists/byname/${1}" "playlists/byname/${1}_${id}_$(date +%s)"
+		else
+			 mv "playlists/byname/${1}" "playlists/byname/${1}_${id}"
+		fi
+		>&2 echo "create pl"
+	        create_lplaylist "${1}" < /dev/stdin
+		ln -s "../../../byid/${id}" "playlists/byname/${1}/_local.depends"
+		lid=$(playlist_nametoid "${1}")
+		update_lplaylist "$lid"
+	fi
   else
 	#
 	>&2 echo "create pl"
@@ -30,8 +45,8 @@ workdir=$(pwd -P) #  | tee /dev/stderr)
 name="${1}"
 basedon="$2"
 [ "$name" ] || { >&2 echo "name empty"; return 1; }
-id=$(date +%s)
-id="local_$id"
+local id=$(date +%s)
+local id="local_$id"
 mkdir -p "playlists/byid/$id"
 [ -e "playlists/byname/${name}" ] && ln -s "${workdir}/playlists/byid/$id" "playlists/byname/${name}_$id"
 [ -e "playlists/byname/${name}" ] || ln -s "${workdir}/playlists/byid/$id" "playlists/byname/${name}"

@@ -23,11 +23,13 @@ do
   case "$sel2" in
   "subscribe")
     echo "${1}" >> pllists.lst
-    getplaylist "${1}" | setupplaylist
+    getplaylist "${1}" | setupplaylist "${1}"
   ;;
   "info")
 	[ "$info" == "" ] && info=$(jq -r '.bannerUrl,.name,.thumbnailUrl,.uploader,.uploaderAvatar,.uploaderUrl,.videos' <<< "${playlistinfo}")
-	xmessage -file -  -default "okay" <<< "${info}"
+#	[ "$info" == "" ] && info=$(jq -r 'keys' <<< "${playlistinfo}")
+	info=$(echo "${info}\nid: ${1}")
+	xmessage -file - -default "okay" -buttons "okay:0,print:10"  <<< "${info}" || echo "${info}" > testinfo.txt
   	;;
   "videos")
 	jq '.relatedStreams[]' <<< "${playlistinfo}" | search_video_prcloop;;
