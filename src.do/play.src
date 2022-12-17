@@ -64,7 +64,8 @@ while [ $i -le 100 ]
 do
   id=$(selectavid "${folder}" "$sorting" $i) || exit 1
   prcvideo "${id}" "${2}" # "view+{;}qualselect{;}480p{x}530106{x}MPEG_4{v-a}126 kbps{x}132459{x}M4A{;}next" || retc=$?
-  i+=1
+  [ "$sorting" == "random" ] || i+=1
+  echo "$i" >&2
 done
 }
 
