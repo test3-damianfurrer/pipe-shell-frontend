@@ -9,7 +9,7 @@ loop="$2"
 vidsel=$(awk '{print $1}' FS='{v-a}' <<< "${4}")
 audsel=$(awk '{print $2}' FS='{v-a}' <<< "${4}")
 cacheopt="--no-cache"
-[ "$3" == "" ] && cacheopt=""
+[ "$3" == "" ] && cacheopt="--cache-secs=240" #streaming with a cache > 15m seems to break the connection
 [ "$loop" == "" ] && loop="0"
 
 videostrm=$(jq -r '.videoStreams' <<< "${streams}" | streamselect "${vidsel}" ) || return 1 #  | tee /dev/stderr

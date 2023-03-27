@@ -1,4 +1,7 @@
 #!/bin/sh
 _pipedget(){
-  curl "https://damianfurrer.ch/yt/${1}" 2>/dev/null
+  #curl "https://damianfurrer.ch/yt/${1}" 2>/dev/null
+  #curl "https://damianfurrer.ch/yt/${1}" 2>/dev/null
+#  curl "http://[200:c8a1:31b4:fa54:748:afd6:8697:3d70]/yt/${1}" 2>/dev/null
+  curl "http://[200:c8a1:31b4:fa54:748:afd6:8697:3d70]/ygg-yt/${1}" 2>/dev/null
 }
