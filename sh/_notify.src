@@ -1,0 +1,20 @@
+#!/bin/sh
+#[ "$(type -t _notify)" == "function" ]                    || source sh/_notify.src
+
+_notify(){
+	export ENV_NAME="${1}"
+	$HOME/.dwm/updatebar.sh ENV_VAR > /dev/null
+}
+
+_notifyUpdateLine(){
+	printf '%s   \r' "$i/$lines"
+	export ENV_NAME="${1}"
+	export ENV_NAMEFILE="$HOME/.dwm/pipupdates.lst"
+	$HOME/.dwm/updatebar.sh PPENV_VAR > /dev/null
+}
+
+_notifyProcessChannel(){
+	echo "${1}" | tee -a "$HOME/.dwm/pipupdates.lst"
+	#  export ENV_NAME="Processing: ${channel}"
+	#  $HOME/.dwm/updatebar.sh ENV_VAR > /dev/null
+}

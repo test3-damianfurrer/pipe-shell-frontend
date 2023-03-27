@@ -11,9 +11,9 @@ id=$(jq '.id' <<< "$chnl" | sed 's/^"//' | sed 's/"$//')
 
 #mkdir -p "${channel}"
 if [ -e "channels/byid/$id" ]; then
-  echo "Updating: ${channel}"
+  _notifyProcessChannel "Updating: ${channel}"
 else
-  echo "Processing: ${channel}"
+  _notifyProcessChannel "Processing: ${channel}"
   if [ -e "channels/byname/${channel}" ]; then
     mkdir -p "channels/byname/${channel}_$id"
     cd "channels/byid"
@@ -44,3 +44,4 @@ jq -j '.verified' <<< "$chnl" > "channels/byid/$id/verified.json"
 }
 
 [ "$(type -t process)" == "function" ] || source ./sh/process.src
+[ "$(type -t _notify)" == "function" ] || source sh/_notify.src
