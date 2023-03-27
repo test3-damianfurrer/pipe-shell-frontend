@@ -13,12 +13,16 @@ chechprogramavailable "mpv"
 chechprogramavailable "dmenu"
 chechprogramavailable "xmessage"
 chechprogramavailable "xclip"
+chechprogramavailable "sxiv"
 
 exit
 
 ln -sf do.sh play
 ln -sf do.sh listenall
 ln -sf do.sh update
+
+#if we have the sxiv list mod installed
+[ -e "/usr/local/bin/sxiv" ] && cat sh/_thumbsel.src.tmpl > sh/_thumbsel.src
 
 newpath=$(echo "$PWD/_c/duration2text" | sed 's/\//\\\//g')
 sed 's/_duration2text_path_/'"${newpath}"'/' sh/_thumbdl.src.tmpl > sh/_thumbdl.src

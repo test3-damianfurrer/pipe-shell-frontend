@@ -1,16 +1,9 @@
 #!/bin/sh
 _thumbsel(){
-
-#/home/damian/source-code/sxiv/sxiv-test -iol
-#/home/damian/source-code/sxiv/sxiv-test -oil < /dev/stdin
-/usr/local/bin/sxiv -oil < /dev/stdin
+sxiv -oit < /dev/stdin
 }
 _thumbselOne(){
-
-#/home/damian/source-code/sxiv/sxiv-test -iol
-#/home/damian/source-code/sxiv/sxiv-test -oi1l < /dev/stdin
-/usr/local/bin/sxiv -oi1l < /dev/stdin
-
+sxiv -oit < /dev/stdin
 }
 
 _thumbselFull(){

@@ -1,0 +1,13 @@
+#!/bin/sh
+#works with list mod (https://github.com/test3-damianfurrer/sxiv-mod.git)
+_thumbsel(){
+/usr/local/bin/sxiv -oil < /dev/stdin
+}
+_thumbselOne(){
+/usr/local/bin/sxiv -oi1l < /dev/stdin
+
+}
+
+_thumbselFull(){
+ sxiv "${1}"
+}
