@@ -81,9 +81,6 @@ prcvideo_info_oedivcrp(){
 	xmsgtext=$(vidinfo "$1" "info"  <<< "${vinf}")
 	sel="info-show"
 }
-prcvideo_exit_oedivcrp(){
-  exit 1
-}
 
 prcvideo_no_cache_oedivcrp(){
 	nocache="true"
@@ -189,6 +186,7 @@ prcvideo(){
   unset fved
 }
 
+[ "$(type -t prcvideo_exit_oedivcrp)" == "function" ] || source ./sh/prcvideo.d/*.src
 [ "$(type -t ffmpeg_video)" == "function" ] || source ./sh/ffmpeg-video.src
 [ "$(type -t view_dash)" == "function" ] || source ./sh/view-dash.src
 [ "$(type -t vidinfo)" == "function" ] || source ./sh/vidinfo.src

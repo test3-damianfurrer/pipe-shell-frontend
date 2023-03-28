@@ -1,0 +1,4 @@
+#!/bin/sh
+prcvideo_exit_oedivcrp(){
+  exit 1
+}
