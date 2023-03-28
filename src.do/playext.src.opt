@@ -1,0 +1,36 @@
+#!/bin/bash
+functions=$(echo "${functions}";echo "streamlistenall";echo "dovididwith";echo "streamlistenid";echo "streamlistenidloop";echo "streamlistenidloopfix")
+#echo "play"
+
+dovididwith(){
+#$1 id
+#$2 "command"
+#source ./sh/selectavid.src
+source ./sh/prcvideo.src
+prcvideo "${1}" "${2}" &
+}
+
+streamlistenid(){
+#!/bin/bash
+#$1 channelname
+./do.sh "dovididwith" "${1}" "2varAstream{;}126 kbps{x}132459{x}M4A{;}next"
+}
+
+streamlistenidloop(){
+#!/bin/bash
+#$1 channelname
+./do.sh "dovididwith" "${1}" "2varLoopAstream{;}126 kbps{x}132459{x}M4A{;}next"
+}
+streamlistenidloopfix(){
+#!/bin/bash
+#$1 channelname
+./do.sh "dovididwith" "${1}" "2varLoopAstreamFix{;}126 kbps{x}132459{x}M4A{;}next"
+}
+
+
+streamlistenall(){
+#!/bin/bash
+#$1 channelname
+./do.sh "doallplay" "${1}" "2varAstream{;}126 kbps{x}132459{x}M4A{;}next"
+}
+

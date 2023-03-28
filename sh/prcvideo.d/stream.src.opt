@@ -1,0 +1,43 @@
+#!/bin/sh
+prcvideo_2varAstream_oedivcrp(){
+       tmp=$(poppresel <<< "${preselect}")
+       currpresel=$(awk '{print $1}' FS='{!}' <<< "${tmp}")
+       preselect=$(awk '{print $2}' FS='{!}' <<< "${tmp}")
+
+       #cd "$HOME/scripts/ffmpeg/varaudio"
+       ##setsid -f ./overlayfromyt.sh "$1" &
+       #./overlayfromyt.sh "$1" &
+       ##sel="exit"
+       stream=$(jq -r '.audioStreams' <<< "${vinf}" | streamselect "${currpresel}" | jq -r '.url')
+       [ "$stream" ] || stream=$(jq -r '.hls' <<< "${vinf}")
+       ffmpeg -i "${stream}" -c:a ac3 -f ac3 unix:$HOME/scripts/ffmpeg/varaudio/overlay.in.sock &
+}
+
+prcvideo_2varLoopAstreamFix_oedivcrp(){
+       echo "2varLoopAstreamFix" >&2
+       tmp=$(poppresel <<< "${preselect}")
+       currpresel=$(awk '{print $1}' FS='{!}' <<< "${tmp}")
+       preselect=$(awk '{print $2}' FS='{!}' <<< "${tmp}")
+       stream=$(jq -r '.audioStreams' <<< "${vinf}" | streamselect "${currpresel}" | jq -r '.url' | tee /dev/stderr)
+       [ "$stream" ] || stream=$(jq -r '.hls' <<< "${vinf}")
+       echo "${stream}" >&2
+       ffmpeg -stream_loop -1 -i "${stream}" -c:a ac3 -map 0:a:0? -f ac3 unix:$HOME/scripts/ffmpeg/varaudio/overlay.in.sock #2>/dev/null #&
+}
+
+prcvideo_2varLoopAstream_oedivcrp(){
+       tmp=$(poppresel <<< "${preselect}")
+       currpresel=$(awk '{print $1}' FS='{!}' <<< "${tmp}")
+       preselect=$(awk '{print $2}' FS='{!}' <<< "${tmp}")
+
+       #cd "$HOME/scripts/ffmpeg/varaudio"
+       ##setsid -f ./overlayfromyt.sh "$1" &
+       #./overlayfromyt.sh "$1" &
+       ##sel="exit"
+       stream=$(jq -r '.audioStreams' <<< "${vinf}" | streamselect "${currpresel}" | jq -r '.url')
+       [ "$stream" ] || stream=$(jq -r '.hls' <<< "${vinf}")
+       ffmpeg -stream_loop -1 -i "${stream}" -c:a ac3 -f ac3 unix:$HOME/scripts/ffmpeg/varaudio/overlay.in.sock &
+       loopprc="$!"
+       xmessage -file - <<< "Playing in stream..."
+       kill $loopprc
+       unset loopprc
+}

@@ -1,0 +1,2 @@
+#!/bin/sh
+viewmen=$(echo "${viewmen}"; echo "2varAstream"; echo "2varLoopAstream")

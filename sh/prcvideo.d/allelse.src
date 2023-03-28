@@ -100,28 +100,3 @@ prcvideo_listen_gui_oedivcrp(){
 prcvideo_addto_playlist_oedivcrp(){
 	echo "$1" | addto_playlist
 }
-prcvideo_info_show_oedivcrp(){
-	out=0
-	xmessage -file - -default "okay" -buttons "okay:0,description:10,Show Channel:50,ChannelThumb:20,Thumb:30,Copy:40,Share:41" <<< "$xmsgtext" || out=$?
-	case $out in
-	10)
-	  sel="description" ;;
-	20)
-	  wget -q -O tmp.webp "${uploaderAvatar}"
-	  sel="showtmp" ;;
-	30)
-	  wget -q -O tmp.webp "${thumbnailUrl}"
-	  sel="showtmp" ;;
-	40)
-	  echo "$xmsgtext" | tee /dev/stderr | xclip -selection "clipboard";;
-	41)
-	  echo -n "https://youtu.be/$1" | tee /dev/stderr | xclip -selection "clipboard";;
-	50)
-	  bakfved="$fved"
-          unset fved
-	  prcchannel $(grep "Url: /channel/" <<< "${xmsgtext}" | sed 's/Url: \/channel\///') || sel=""
-          fved="$bakfved"
-          unset bakfved
-	;;
-	esac
-}
