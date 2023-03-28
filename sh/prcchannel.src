@@ -11,10 +11,10 @@ sourceprcchnl(){
 prcchannel(){
 sourceprcchnl
 mkdir -p find
-menu=$(echo "videos";echo "next page";echo "subscribe";echo "exit";)
+#prcchnl_menu=$(echo "videos";echo "next page";echo "subscribe";echo "exit";)
 channelinfo=$(getchannel "$1" 2>/dev/null)
 chnlname=$(jq -r '.name' <<< "${channelinfo}")
-sel=$(_menu 5 "$chnlname" <<< "$menu")
+sel=$(_menu 5 "$chnlname" <<< "$prcchnl_menu") #from sourcing
 chnlid="$1"
 while [ "$sel" != "exit" ]
 do

@@ -1,4 +1,5 @@
 #!/bin/sh
+prcchnl_menu=$(echo "${prcchnl_menu}" ;echo "videos";echo "next page";echo "subscribe")
 prcchnl_subscribe_lnhccrp(){
 	echo "$chnlid" >> abos.lst
 	getchannel "$chnlid" | setup
@@ -9,11 +10,11 @@ prcchnl_videos_lnhccrp(){
 prcchnl_prev_page_lnhccrp(){
 	channelinfo=$(echo "${prevpage}")
 	prevpage=""
-	menu=$(echo "videos";echo "next page"; echo "exit";)
+	prcchnl_menu=$(echo "videos";echo "next page"; echo "exit";)
 	sel="videos"
 }
 prcchnl_next_page_lnhccrp(){
-        menu=$(echo "videos";echo "next page";echo "prev page"; echo "subscribe";echo "exit";)
+        prcchnl_menu=$(echo "videos";echo "next page";echo "prev page"; echo "subscribe";echo "exit";)
 	prevpage=$(echo "${channelinfo}")
 	nextpage=$(jq -r '.nextpage' <<< "${channelinfo}" | jq -sRr @uri) #| sed 's/\\"/"/g' | sed 's/\&/%26/g')
         channelinfo=$(_pipedget "nextpage/channel/${chnlid}?nextpage=${nextpage}")

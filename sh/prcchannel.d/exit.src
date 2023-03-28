@@ -1,4 +1,5 @@
 #!/bin/sh
+prcchnl_menu=$(echo "${prcchnl_menu}" ;echo "exit")
 prcchnl_exit_lnhccrp(){
   exit 1
 }

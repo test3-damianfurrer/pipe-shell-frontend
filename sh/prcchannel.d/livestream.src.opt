@@ -1,0 +1,8 @@
+#!/bin/sh
+prcchnl_menu=$(echo "${prcchnl_menu}" ;echo "Livestreams")
+prcchnl_Livestreams_lnhccrp(){
+       prcchnl_menu=$(echo "videos";echo "next page";echo "prev page"; echo "subscribe";echo "exit";)
+       nextpage=$(jq -r '.tabs[0].data' <<< "${channelinfo}" | jq -sRr @uri) #| sed 's/\\"/"/g' | sed 's/\&/%26/g')
+       channelinfo=$(_pipedget "nextpage/channel/$1?nextpage=${nextpage}" | tee /dev/stderr) #doesn't acctually work I belive. maybe the backend needs updating
+       sel="videos"
+}
