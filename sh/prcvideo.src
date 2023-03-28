@@ -8,66 +8,37 @@ poppresel(){
   sed 's/{;}/{!}/' < /dev/stdin
 }
 
-prcvideo(){
-[ "$1" == "" ] && exit
-  nocache="true"
-  preselect="${2}"
-  tmp=$(poppresel <<< "${preselect}")
-  currpresel=$(awk '{print $1}' FS='{!}' <<< "${tmp}")
-  preselect=$(awk '{print $2}' FS='{!}' <<< "${tmp}")
-  vinf=$(_pipedget "streams/$1")
-
-  title=$(jq -r '.title' <<< "${vinf}")
-  relstream=""
-  sel="${currpresel}"
-  [ "$currpresel" == "" ] && sel=$(getactions | _menu 5 "${title}")
-  while [ "$sel" != "next" ]
-  do
-    sel2="$sel"
-    sel=""
-    case "$sel2" in
-      "showtmp")
+prcvideo_showtmp_oedivcrp(){
 	_thumbselFull tmp.webp #;sel=""
 	rm tmp.webp
 	sel="info-show"
-      ;;
-      "no cache")
-	nocache="true";;
-      "with cache")
-	nocache="";;
-      "back")
-	sel="";;
-      "view")
+}
+
+prcvideo_back_oedivcrp(){
+  sel=""
+}
+
+prcvideo_view_oedivcrp(){
         stream=$(jq -r '.hls' <<< "${vinf}")
         [ "$nocache" == "" ] || mpv "$stream" --no-cache --no-ytdl
         [ "$nocache" == "" ] && mpv "$stream" --no-ytdl
-      ;;
-      "view-dash")
-	jq -r '.dash' <<< "${vinf}" | view_dash
-      ;;
-      "fview")
+}
+
+prcvideo_fview_oedivcrp(){
 	nocache=""
 	preselect="720p0_MPEG_4"
 	sel="qualselect"
-      ;;
-      "qualselect")
+}
+prcvideo_qualselect_oedivcrp(){
         tmp=$(poppresel <<< "${preselect}")
         currpresel=$(awk '{print $1}' FS='{!}' <<< "${tmp}")
         preselect=$(awk '{print $2}' FS='{!}' <<< "${tmp}")
 	ffmpeg_video "" "" "$nocache" "${currpresel}" <<< "${vinf}" || echo "failed to select quality" >&2
-      ;;
-      "loop")
+}
+prcvideo_loop_oedivcrp(){
 	sel=$((echo "qualselect-loop"; echo "listen-loop") | _menu "" "Loop")
-      ;;
-      "qualselect-loop")
-	loops=$(printf -- '-1\n1\n2\n3\n4\n5\n6\n7\n8\n9' | _menu 10 "loops: ")
-	ffmpeg_video "" "$loops" "$nocache" <<< "${vinf}" || echo "failed to select quality" >&2
-      ;;
-      "listen-loop")
-        stream=$(jq -r '.audioStreams' <<< "${vinf}" | streamselect | jq -r '.url')
-	mpv "$stream" --loop-file=yes --no-ytdl || echo "failed" >&2
-      ;;
-      "qualselectRip")
+}
+prcvideo_qualselectRip_oedivcrp(){
 	#title
 	echo "id: $1" >&2
 	titleRip=$(sed 's/\//_/g' <<< "${title}")
@@ -81,59 +52,67 @@ prcvideo(){
 	[ -e "videos/$1" ] && ln -s "../../saves/$1" "videos/$1/saved"
 	[ -e "saves/$1/$1.mkv" ] && rm "saves/$1/$1.mkv"
 	ffmpeg_video "saves/$1/$1.mkv" "" "$nocache" <<< "${vinf}" || echo "failed to select quality" >&2
-      ;;
-      "view+")
-	hls=$(jq -r '.hls' <<< "${vinf}" | sed 's/null//')
-	dash=$(jq -r '.dash' <<< "${vinf}" | sed 's/null//')
-        tmp=$(poppresel <<< "${preselect}")
-        currpresel=$(awk '{print $1}' FS='{!}' <<< "${tmp}")
-        preselect=$(awk '{print $2}' FS='{!}' <<< "${tmp}")
-	sel="${currpresel}"
-	[ "$currpresel" == "" ] && sel=$(([ "$hls" == "" ] || echo "view";[ "$dash" == "" ] || echo "view-dash";echo "view&"; echo "qualselect";echo "qualselectRip";echo "listen"; echo "loop";[ "$nocache" == "" ] || echo "with cache";[ "$nocache" == "" ] && echo "no cache"; echo "back";) | _menu 10 "view+")
-      ;;
-      "listen")
+}
+prcvideo_listen_oedivcrp(){
         tmp=$(poppresel <<< "${preselect}")
         currpresel=$(awk '{print $1}' FS='{!}' <<< "${tmp}")
 	preselect=$(awk '{print $2}' FS='{!}' <<< "${tmp}")
         stream=$(jq -r '.audioStreams' <<< "${vinf}" | streamselect "${currpresel}" | jq -r '.url')
 	mpv "${stream}" --no-ytdl || echo "failed" >&2
-      ;;
-      "listen-gui")
-        tmp=$(poppresel <<< "${preselect}")
-        currpresel=$(awk '{print $1}' FS='{!}' <<< "${tmp}")
-	preselect=$(awk '{print $2}' FS='{!}' <<< "${tmp}")
-        stream=$(jq -r '.audioStreams' <<< "${vinf}" | streamselect "${currpresel}" | jq -r '.url')
-	mpv "${stream}" --no-ytdl --profile=pseudo-gui || echo "failed" >&2
-      ;;
-      "view&")
-        stream=$(jq -r '.hls' <<< "${vinf}")
-        mpv "$stream" --no-terminal &
-      ;;
-      "comments")
+}
+prcvideo_comments_oedivcrp(){
 	showcomments "$1"
-      ;;
-      "description")
+}
+prcvideo_description_oedivcrp(){
 	xmsgtext=$(vidinfo "$1" "desc"  <<< "${vinf}")
 	xmessage -file - -default "okay" -buttons "okay:0,copy:10" <<< "$xmsgtext"
 	[ $? -eq 10 ] && echo "$xmsgtext" >&2
-      ;;
-      "related")
+}
+prcvideo_related_oedivcrp(){
 	[ "$relstream" == "" ] && relstream=$(jq -r '.relatedStreams[]' <<< "${vinf}")
 	mkdir -p find
 	search_video_prcloop <<< "${relstream}"
-      ;;
-      "addto playlist")
-	echo "$1" | addto_playlist
-      ;;
-      "info")
-	relstream=$(jq -r '.relatedStreams[]' <<< "${vinf}")
+}
+prcvideo_info_oedivcrp(){
+  	relstream=$(jq -r '.relatedStreams[]' <<< "${vinf}")
 	uploaderAvatar=$(jq -r '.uploaderAvatar' <<< "${vinf}")
 	thumbnailUrl=$(jq -r '.thumbnailUrl' <<< "${vinf}")
 
 	xmsgtext=$(vidinfo "$1" "info"  <<< "${vinf}")
 	sel="info-show"
-      ;;
-      "info-show")
+}
+prcvideo_exit_oedivcrp(){
+  exit 1
+}
+
+prcvideo_no_cache_oedivcrp(){
+	nocache="true"
+}
+prcvideo_with_cache_oedivcrp(){
+	nocache=""
+}
+prcvideo_view_dash_oedivcrp(){
+	jq -r '.dash' <<< "${vinf}" | view_dash
+}
+prcvideo_qualselect_loop_oedivcrp(){
+	loops=$(printf -- '-1\n1\n2\n3\n4\n5\n6\n7\n8\n9' | _menu 10 "loops: ")
+	ffmpeg_video "" "$loops" "$nocache" <<< "${vinf}" || echo "failed to select quality" >&2
+}
+prcvideo_listen_loop_oedivcrp(){
+        stream=$(jq -r '.audioStreams' <<< "${vinf}" | streamselect | jq -r '.url')
+	mpv "$stream" --loop-file=yes --no-ytdl || echo "failed" >&2
+}
+prcvideo_listen_gui_oedivcrp(){
+        tmp=$(poppresel <<< "${preselect}")
+        currpresel=$(awk '{print $1}' FS='{!}' <<< "${tmp}")
+	preselect=$(awk '{print $2}' FS='{!}' <<< "${tmp}")
+        stream=$(jq -r '.audioStreams' <<< "${vinf}" | streamselect "${currpresel}" | jq -r '.url')
+	mpv "${stream}" --no-ytdl --profile=pseudo-gui || echo "failed" >&2
+}
+prcvideo_addto_playlist_oedivcrp(){
+	echo "$1" | addto_playlist
+}
+prcvideo_info_show_oedivcrp(){
 	out=0
 	xmessage -file - -default "okay" -buttons "okay:0,description:10,Show Channel:50,ChannelThumb:20,Thumb:30,Copy:40,Share:41" <<< "$xmsgtext" || out=$?
 	case $out in
@@ -157,11 +136,47 @@ prcvideo(){
           unset bakfved
 	;;
 	esac
+}
+prcvideo_view__oedivcrp(){
+    case "$1" in
+      "view+")
+	hls=$(jq -r '.hls' <<< "${vinf}" | sed 's/null//')
+	dash=$(jq -r '.dash' <<< "${vinf}" | sed 's/null//')
+        tmp=$(poppresel <<< "${preselect}")
+        currpresel=$(awk '{print $1}' FS='{!}' <<< "${tmp}")
+        preselect=$(awk '{print $2}' FS='{!}' <<< "${tmp}")
+	sel="${currpresel}"
+	[ "$currpresel" == "" ] && sel=$(([ "$hls" == "" ] || echo "view";[ "$dash" == "" ] || echo "view-dash";echo "view&"; echo "qualselect";echo "qualselectRip";echo "listen"; echo "loop";[ "$nocache" == "" ] || echo "with cache";[ "$nocache" == "" ] && echo "no cache"; echo "back";) | _menu 10 "view+")
       ;;
-      "exit")
-        exit 1
+      "view&")
+        stream=$(jq -r '.hls' <<< "${vinf}")
+        mpv "$stream" --no-terminal &
       ;;
     esac
+}
+
+
+prcvideo(){
+[ "$1" == "" ] && exit
+  nocache="true"
+  preselect="${2}"
+  tmp=$(poppresel <<< "${preselect}")
+  currpresel=$(awk '{print $1}' FS='{!}' <<< "${tmp}")
+  preselect=$(awk '{print $2}' FS='{!}' <<< "${tmp}")
+  vinf=$(_pipedget "streams/$1")
+
+  title=$(jq -r '.title' <<< "${vinf}")
+  relstream=""
+  sel="${currpresel}"
+  [ "$currpresel" == "" ] && sel=$(getactions | _menu 5 "${title}")
+  while [ "$sel" != "next" ]
+  do
+    sel2="$sel"
+    sel=""
+
+    sel3=$(echo -n "$sel2" | tr "[:space:][:cntrl:][:punct:]" "_")
+    [ "$(type -t prcvideo_${sel3}_oedivcrp)" == "function" ] && "prcvideo_${sel3}_oedivcrp" "${sel2}"
+
     if [ "$sel" == "" ]; then
       tmp=$(poppresel <<< "${preselect}")
       currpresel=$(awk '{print $1}' FS='{!}' <<< "${tmp}")
