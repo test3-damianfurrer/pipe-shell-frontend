@@ -150,7 +150,11 @@ prcvideo(){
 	41)
 	  echo -n "https://youtu.be/$1" | tee /dev/stderr | xclip -selection "clipboard";;
 	50)
+	  bakfved="$fved"
+          unset fved
 	  prcchannel $(grep "Url: /channel/" <<< "${xmsgtext}" | sed 's/Url: \/channel\///') || sel=""
+          fved="$bakfved"
+          unset bakfved
 	;;
 	esac
       ;;

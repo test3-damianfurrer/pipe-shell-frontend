@@ -9,6 +9,7 @@ chnlname=$(jq -r '.name' <<< "${channelinfo}")
 sel=$(_menu 5 "$chnlname" <<< "$menu")
 while [ "$sel" != "exit" ]
 do
+  unset fved
   sel2=$(echo "$sel")
   sel=""
   case "$sel2" in
