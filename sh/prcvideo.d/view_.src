@@ -1,0 +1,33 @@
+#!/bin/sh
+prcvideo_view__oedivcrp(){
+    echo "prcvideo_view__oedivcrp" >&2
+    case "$1" in
+      "view+")
+	hls=$(jq -r '.hls' <<< "${vinf}" | sed 's/null//')
+	dash=$(jq -r '.dash' <<< "${vinf}" | sed 's/null//')
+        tmp=$(poppresel <<< "${preselect}")
+        currpresel=$(awk '{print $1}' FS='{!}' <<< "${tmp}")
+        preselect=$(awk '{print $2}' FS='{!}' <<< "${tmp}")
+	sel="${currpresel}"
+
+	unset viewmen
+#	for f in view+.d/*.src
+	for f in ./sh/prcvideo.d/view+.d/*.src
+	do
+#	  echo "$f"
+	  #ret=$(source "${f}")
+	  source "${f}"
+	done
+
+	[ "$currpresel" == "" ] && sel=$(echo "$viewmen" | tail -n +2 | _menu 10 "view+")
+#	[ "$currpresel" == "" ] && sel=$(([ "$hls" == "" ] || echo "view";[ "$dash" == "" ] || echo "view-dash";echo "view&"; echo "qualselect";echo "qualselectRip";echo "listen"; echo "loop";[ "$nocache" == "" ] || echo "with cache";[ "$nocache" == "" ] && echo "no cache"; echo "back";) | _menu 10 "view+")
+      ;;
+      "view&")
+        stream=$(jq -r '.hls' <<< "${vinf}")
+        mpv "$stream" --no-terminal &
+      ;;
+    *)
+	echo "what" >&2
+    ;;
+    esac
+}

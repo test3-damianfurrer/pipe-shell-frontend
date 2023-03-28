@@ -1,0 +1,3 @@
+#!/bin/sh
+[ "$nocache" == "" ] || viewmen=$(echo "${viewmen}"; echo "with cache")
+[ "$nocache" == "" ] && viewmen=$(echo "${viewmen}"; echo "no cache")

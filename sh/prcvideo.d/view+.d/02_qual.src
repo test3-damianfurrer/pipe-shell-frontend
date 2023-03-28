@@ -1,0 +1,2 @@
+#!/bin/sh
+viewmen=$(echo "${viewmen}"; echo "qualselect"; echo "qualselectRip")

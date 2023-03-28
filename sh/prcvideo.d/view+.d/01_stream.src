@@ -1,0 +1,5 @@
+#!/bin/sh
+#viewmen=""
+[ "$hls" == "" ] || viewmen=$(echo "${viewmen}"; echo "view")
+[ "$dash" == "" ] || viewmen=$(echo "${viewmen}"; echo "view-dash")
+viewmen=$(echo "${viewmen}"; echo "view&")

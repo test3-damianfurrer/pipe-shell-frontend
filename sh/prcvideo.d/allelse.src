@@ -125,20 +125,3 @@ prcvideo_info_show_oedivcrp(){
 	;;
 	esac
 }
-prcvideo_view__oedivcrp(){
-    case "$1" in
-      "view+")
-	hls=$(jq -r '.hls' <<< "${vinf}" | sed 's/null//')
-	dash=$(jq -r '.dash' <<< "${vinf}" | sed 's/null//')
-        tmp=$(poppresel <<< "${preselect}")
-        currpresel=$(awk '{print $1}' FS='{!}' <<< "${tmp}")
-        preselect=$(awk '{print $2}' FS='{!}' <<< "${tmp}")
-	sel="${currpresel}"
-	[ "$currpresel" == "" ] && sel=$(([ "$hls" == "" ] || echo "view";[ "$dash" == "" ] || echo "view-dash";echo "view&"; echo "qualselect";echo "qualselectRip";echo "listen"; echo "loop";[ "$nocache" == "" ] || echo "with cache";[ "$nocache" == "" ] && echo "no cache"; echo "back";) | _menu 10 "view+")
-      ;;
-      "view&")
-        stream=$(jq -r '.hls' <<< "${vinf}")
-        mpv "$stream" --no-terminal &
-      ;;
-    esac
-}
