@@ -1,0 +1,4 @@
+#!/bin/sh
+prcchnl_exit_lnhccrp(){
+  exit 1
+}

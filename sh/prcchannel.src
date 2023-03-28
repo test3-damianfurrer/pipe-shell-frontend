@@ -1,40 +1,31 @@
 #!/bin/sh
-#$1 channel id
+sourceprcchnl(){
+[ "$(type -t prcchnl_exit_lnhccrp)" == "function" ] && return 0
+  for f in ./sh/prcchannel.d/*.src
+  do
+    source "${f}"
+  done
+}
 
+#$1 channel id
 prcchannel(){
+sourceprcchnl
 mkdir -p find
 menu=$(echo "videos";echo "next page";echo "subscribe";echo "exit";)
 channelinfo=$(getchannel "$1" 2>/dev/null)
 chnlname=$(jq -r '.name' <<< "${channelinfo}")
 sel=$(_menu 5 "$chnlname" <<< "$menu")
+chnlid="$1"
 while [ "$sel" != "exit" ]
 do
   unset fved
   sel2=$(echo "$sel")
   sel=""
-  case "$sel2" in
-  "subscribe")
-	echo "$1" >> abos.lst
-	getchannel "$1" | setup
-  ;;
-  "videos")
-	jq '.relatedStreams[]' <<< "${channelinfo}" | search_video_prcloop;; #./sh/search-video-prc.sh;;
-  "prev page")
-	channelinfo=$(echo "${prevpage}")
-	prevpage=""
-	menu=$(echo "videos";echo "next page"; echo "exit";)
-	sel="videos"
-  ;;
-  "next page")
-        menu=$(echo "videos";echo "next page";echo "prev page"; echo "subscribe";echo "exit";)
-	prevpage=$(echo "${channelinfo}")
-	nextpage=$(jq -r '.nextpage' <<< "${channelinfo}" | jq -sRr @uri) #| sed 's/\\"/"/g' | sed 's/\&/%26/g')
-        channelinfo=$(_pipedget "nextpage/channel/$1?nextpage=${nextpage}")
-	sel="videos"
-  ;;
-  *)
-  ;;
-  esac
+
+  sel3=$(echo -n "$sel2" | tr "[:space:][:cntrl:][:punct:]" "_")
+  [ "$(type -t prcchnl_${sel3}_lnhccrp)" == "function" ] && "prcchnl_${sel3}_lnhccrp" "${sel2}"
+  [ "$?" -gt "0" ] && { echo "return code exit"; exit 1; }
+
   [ "$sel" == "" ] && sel=$(_menu 5 "$chnlname" <<< "$menu")
 
 done
