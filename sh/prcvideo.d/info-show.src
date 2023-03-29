@@ -1,4 +1,41 @@
 #!/bin/sh
+prcvideo_Show_Channel_oedivcrp(){
+	  bakfved="$fved"
+          unset fved
+	  prcchannel $(grep "Url: /channel/" <<< "${xmsgtext}" | sed 's/Url: \/channel\///') || sel=""
+          fved="$bakfved"
+          unset bakfved
+	  return 0
+}
+prcvideo_Show_Thumb_oedivcrp(){
+	  wget -q -O tmp.webp "${thumbnailUrl}"
+	  sel="showtmp"
+}
+prcvideo_Show_ChnlThumb_oedivcrp(){
+	  wget -q -O tmp.webp "${uploaderAvatar}"
+	  sel="showtmp"
+}
+prcvideo_Chat_oedivcrp(){
+                xpwd="$PWD"
+                cd "$HOME/browse/media/yt/streaming"
+                dobrowse "https://studio.youtube.com/live_chat?ispopout=1&v=$1"
+                cd "$xpwd"
+                unset xpwd
+}
+prcvideo_CopyInfo_oedivcrp(){
+	  echo "$xmsgtext" | tee /dev/stderr | xclip -selection "clipboard"
+}
+prcvideo_CopyShare_oedivcrp(){
+#	  echo -n "https://youtu.be/$1" | tee /dev/stderr | xclip -selection "clipboard";;
+          uploadertmp=$(jq -r '.uploader' <<< "${vinf}" | sed 's/\//_/g')
+          echo -n "https://youtu.be/$1 (${uploadertmp})${title}" | tee /dev/stderr | xclip -selection "clipboard"
+          unset uploadertmp
+}
+prcvideo_OpenBrowse_oedivcrp(){
+          echo "$PWD"
+          dobrowse-mobile "https://youtu.be/$1" 2>/dev/null
+}
+
 prcvideo_info_show_oedivcrp(){
 	out=0
 	#xmessage -file - -default "okay" -buttons "okay:0,description:10,Show Channel:50,ChannelThumb:20,Thumb:30,Copy:40,Share:41" <<< "$xmsgtext" || out=$?
@@ -7,36 +44,18 @@ prcvideo_info_show_oedivcrp(){
 	10)
 	  sel="description" ;;
 	20)
-	  wget -q -O tmp.webp "${uploaderAvatar}"
-	  sel="showtmp" ;;
+	  sel="Show_ChnlThumb" ;;
 	30)
-	  wget -q -O tmp.webp "${thumbnailUrl}"
-	  sel="showtmp" ;;
+	  sel="Show_Thumb" ;;
         31)
-                xpwd="$PWD"
-                cd "$HOME/browse/media/yt/streaming"
-                dobrowse "https://studio.youtube.com/live_chat?ispopout=1&v=$1"
-                cd "$xpwd"
-                unset xpwd
-        ;;
+	  sel="Chat" ;;
 	40)
-	  echo "$xmsgtext" | tee /dev/stderr | xclip -selection "clipboard";;
+	  sel="CopyInfo" ;;
 	41)
-#	  echo -n "https://youtu.be/$1" | tee /dev/stderr | xclip -selection "clipboard";;
-          uploadertmp=$(jq -r '.uploader' <<< "${vinf}" | sed 's/\//_/g')
-          echo -n "https://youtu.be/$1 (${uploadertmp})${title}" | tee /dev/stderr | xclip -selection "clipboard"
-          unset uploadertmp
-        ;;
+	  sel="CopyShare" ;;
         42)
-          echo "$PWD"
-          dobrowse-mobile "https://youtu.be/$1" 2>/dev/null
-        ;;
+	  sel="OpenBrowse" ;;
 	50)
-	  bakfved="$fved"
-          unset fved
-	  prcchannel $(grep "Url: /channel/" <<< "${xmsgtext}" | sed 's/Url: \/channel\///') || sel=""
-          fved="$bakfved"
-          unset bakfved
-	;;
+	  sel="Show_Channel" ;;
 	esac
 }

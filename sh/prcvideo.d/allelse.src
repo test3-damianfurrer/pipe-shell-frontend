@@ -58,6 +58,7 @@ prcvideo_description_oedivcrp(){
 	xmsgtext=$(vidinfo "$1" "desc"  <<< "${vinf}")
 	xmessage -file - -default "okay" -buttons "okay:0,copy:10" <<< "$xmsgtext"
 	[ $? -eq 10 ] && echo "$xmsgtext" >&2
+	return 0 # else prev code passed
 }
 prcvideo_related_oedivcrp(){
 	[ "$relstream" == "" ] && relstream=$(jq -r '.relatedStreams[]' <<< "${vinf}")
