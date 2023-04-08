@@ -18,7 +18,7 @@ prcvideo_Show_ChnlThumb_oedivcrp(){
 prcvideo_Chat_oedivcrp(){
                 xpwd="$PWD"
                 cd "$HOME/browse/media/yt/streaming"
-                dobrowse "https://studio.youtube.com/live_chat?ispopout=1&v=$1"
+                dobrowse "https://studio.youtube.com/live_chat?ispopout=1&v=$vid"
                 cd "$xpwd"
                 unset xpwd
 }
@@ -26,14 +26,17 @@ prcvideo_CopyInfo_oedivcrp(){
 	  echo "$xmsgtext" | tee /dev/stderr | xclip -selection "clipboard"
 }
 prcvideo_CopyShare_oedivcrp(){
-#	  echo -n "https://youtu.be/$1" | tee /dev/stderr | xclip -selection "clipboard";;
+#	  echo -n "https://youtu.be/$vid" | tee /dev/stderr | xclip -selection "clipboard";;
           uploadertmp=$(jq -r '.uploader' <<< "${vinf}" | sed 's/\//_/g')
-          echo -n "https://youtu.be/$1 (${uploadertmp})${title}" | tee /dev/stderr | xclip -selection "clipboard"
+          echo -n "https://youtu.be/$vid (${uploadertmp})${title}" | tee /dev/stderr | xclip -selection "clipboard"
           unset uploadertmp
 }
 prcvideo_OpenBrowse_oedivcrp(){
           echo "$PWD"
-          dobrowse-mobile "https://youtu.be/$1" 2>/dev/null
+	  mkdir -p "videos/$vid"
+	  cd "videos/$vid"
+          dobrowse-mobile "https://youtu.be/$vid" 2>/dev/null
+	  cd ../../
 }
 
 prcvideo_info_show_oedivcrp(){
