@@ -21,6 +21,7 @@ prcvideo(){
   sourceprcvid
   nocache="true"
   preselect="${2}"
+  vid="${1}"
   tmp=$(poppresel <<< "${preselect}")
   currpresel=$(awk '{print $1}' FS='{!}' <<< "${tmp}")
   preselect=$(awk '{print $2}' FS='{!}' <<< "${tmp}")

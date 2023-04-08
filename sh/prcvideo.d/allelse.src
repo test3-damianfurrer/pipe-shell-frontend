@@ -31,18 +31,18 @@ prcvideo_loop_oedivcrp(){
 }
 prcvideo_qualselectRip_oedivcrp(){
 	#title
-	echo "id: $1" >&2
+	echo "id: $vid" >&2
 	titleRip=$(sed 's/\//_/g' <<< "${title}")
 	uploaderRip=$(jq -r '.uploader' <<< "${vinf}" | sed 's/\//_/g')
-	mkdir -p "saves/$1"
+	mkdir -p "saves/$vid"
 	mkdir -p "saves/_title"
 	mkdir -p "saves/_channel/${uploaderRip}"
-	ln -s -f "../$1" "saves/_title/${titleRip}"
-	ln -s -f "../../$1" "saves/_channel/${uploaderRip}/${titleRip}"
-	echo "${vinf}" > "saves/$1/info.json"
-	[ -e "videos/$1" ] && ln -s "../../saves/$1" "videos/$1/saved"
-	[ -e "saves/$1/$1.mkv" ] && rm "saves/$1/$1.mkv"
-	ffmpeg_video "saves/$1/$1.mkv" "" "$nocache" <<< "${vinf}" || echo "failed to select quality" >&2
+	ln -s -f "../$vid" "saves/_title/${titleRip}"
+	ln -s -f "../../$vid" "saves/_channel/${uploaderRip}/${titleRip}"
+	echo "${vinf}" > "saves/${vid}/info.json"
+	[ -e "videos/$vid" ] && ln -s "../../saves/$vid" "videos/${vid}/saved"
+	[ -e "saves/${vid}/${vid}.mkv" ] && rm "saves/${vid}/${vid}.mkv"
+	ffmpeg_video "saves/${vid}/${vid}.mkv" "" "$nocache" <<< "${vinf}" || echo "failed to select quality" >&2
 }
 prcvideo_listen_oedivcrp(){
         tmp=$(poppresel <<< "${preselect}")
@@ -52,10 +52,10 @@ prcvideo_listen_oedivcrp(){
 	mpv "${stream}" --no-ytdl || echo "failed" >&2
 }
 prcvideo_comments_oedivcrp(){
-	showcomments "$1"
+	showcomments "$vid"
 }
 prcvideo_description_oedivcrp(){
-	xmsgtext=$(vidinfo "$1" "desc"  <<< "${vinf}")
+	xmsgtext=$(vidinfo "$vid" "desc"  <<< "${vinf}")
 	xmessage -file - -default "okay" -buttons "okay:0,copy:10" <<< "$xmsgtext"
 	[ $? -eq 10 ] && echo "$xmsgtext" >&2
 	return 0 # else prev code passed
@@ -70,7 +70,7 @@ prcvideo_info_oedivcrp(){
 	uploaderAvatar=$(jq -r '.uploaderAvatar' <<< "${vinf}")
 	thumbnailUrl=$(jq -r '.thumbnailUrl' <<< "${vinf}")
 
-	xmsgtext=$(vidinfo "$1" "info"  <<< "${vinf}")
+	xmsgtext=$(vidinfo "$vid" "info"  <<< "${vinf}")
 	sel="info-show"
 }
 
@@ -99,5 +99,5 @@ prcvideo_listen_gui_oedivcrp(){
 	mpv "${stream}" --no-ytdl --profile=pseudo-gui || echo "failed" >&2
 }
 prcvideo_addto_playlist_oedivcrp(){
-	echo "$1" | addto_playlist
+	echo "$vid" | addto_playlist
 }
