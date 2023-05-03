@@ -21,12 +21,16 @@ if [ "$vidonly" == "true" ]; then
   audio=$(jq -r '.audioStreams' <<< "${streams}" | streamselect "${audsel}" | jq -r '.url') || return 1
   if [ "$savepath" == "" ]; then
 	#--force-seekable=yes
-	[ "$loop" == "0" ] && ffmpeg -i "${audio}" -i "${video}" -map 0:a -map 1:v -c copy -f matroska - 2>/dev/null | mpv - $cacheopt --force-seekable=no --no-ytdl
-	[ "$loop" == "0" ] || ffmpeg -stream_loop "$loop" -i "${audio}" -c copy -f matroska - | ffmpeg -stream_loop "$loop" -i "${video}" -i - -map 1:a -map 0:v -c copy -f matroska - 2>/dev/null | mpv - $cacheopt --no-ytdl
+	#[ "$loop" == "0" ] && ffmpeg -i "${audio}" -i "${video}" -map 0:a -map 1:v -c copy -f matroska - 2>/dev/null | mpv - $cacheopt --force-seekable=no --no-ytdl
+	#[ "$loop" == "0" ] || ffmpeg -stream_loop "$loop" -i "${audio}" -c copy -f matroska - | ffmpeg -stream_loop "$loop" -i "${video}" -i - -map 1:a -map 0:v -c copy -f matroska - 2>/dev/null | mpv - $cacheopt --no-ytdl
+	[ "$loop" == "-1" ] && loop="inf"
+	mpv --audio-file="${audio}" "${video}" $cacheopt --force-seekable=no --no-ytdl --loop-file="$loop" --force-media-title="YT: ${title}"
   fi
   [ "$savepath" == "" ] || ffmpeg -i "${audio}" -i "${video}" -map 0:a -map 1:v -c copy -f matroska - 2>/dev/null | tee "$savepath" | mpv - --no-ytdl
 else
-    [ "$savepath" == "" ] && ffmpeg -stream_loop "$loop" -i "${video}" -c copy -f matroska - 2>/dev/null | mpv - $cacheopt --no-ytdl
+    #[ "$savepath" == "" ] && ffmpeg -stream_loop "$loop" -i "${video}" -c copy -f matroska - 2>/dev/null | mpv - $cacheopt --no-ytdl
+    [ "$loop" == "-1" ] && loop="inf"
+    [ "$savepath" == "" ] && mpv "${video}" $cacheopt --force-seekable=no --no-ytdl --loop-file="$loop"--force-media-title="YT: ${title}"
     [ "$savepath" == "" ] || ffmpeg -i "${video}" -c copy -f matroska - 2>/dev/null | tee "$savepath" |mpv - --no-ytdl
   #mpv "${video}"
 fi
