@@ -1,0 +1,13 @@
+#!/bin/bash
+functions=$(echo "${functions}";echo "nothumbs")
+
+nothumbs(){
+for f in videos/*
+do
+  [ "$f" == "videos/_uploaded" ] && continue
+  [ "$f" == "videos/_uploadedpl" ] && continue
+  [ "$f" == "videos/_duration" ] && continue
+  [ "$f" == "videos/_durationpl" ] && continue
+  [ -e "$f/thumb.webp" ] || echo "$f"
+done
+}

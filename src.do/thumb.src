@@ -1,0 +1,17 @@
+#!/bin/bash
+functions=$(echo "${functions}";echo "fillthumbs")
+
+fillthumbs(){
+  source sh/_pipedget.src
+  source sh/_thumbdl.src
+  ./test.sh "nothumbs" | while read line
+  do
+	local vidid=$(basename "${line}" | tee /dev/stderr)
+	local fname="${line}/thumb.webp"
+
+        local json=$(_pipedget "streams/$vidid")
+	local thumb=$(jq -r '.thumbnailUrl' <<< "${json}")
+	local duration=$(jq -r '.duration' <<< "${json}")
+	_thumbdl "${fname}" "${thumb}" "${duration}" 72
+  done
+}
