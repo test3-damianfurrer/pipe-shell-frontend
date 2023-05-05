@@ -4,17 +4,31 @@ _thumbdl(){
 	#$2 url
 	#($3) duration
 	#[ "$3" ] && dmenu -p "Duration $3"
+	[ -e "${1}" ] && rm "${1}" #in a prev. attempt ../notfound.webp got overwritten due to link dereferencing.
 	if [ "$3" ]; then
 		tmpname=$(date +%N)
-		wget -q -O "$tmpname.webp" "${2}" > /dev/null || return 1
+#		wget -q -O "$tmpname.webp" "${2}" > /dev/null || return 1
+		wget -q -O "$tmpname.webp" "${2}" > /dev/null || ln -s ../notfound.webp "$tmpname.webp"
+		if [ $(stat -c "%s" "$tmpname.webp" ) -eq 0 ]; then
+                  rm "$tmpname.webp"
+                  ln -s ../notfound.webp "$tmpname.webp"
+                fi
+
+#		ln -s ../notfound.webp "$tmpname.webp"
 
 		#mv "${1}" "${1}-tmp.webp"
 		duration=$(_duration2text_path_ "$3")
 		pointsize=16
 		[ "$4" ] && pointsize=$4
 		convert "$tmpname.webp" -background White -pointsize $pointsize label:"$duration" -gravity Center -append "$tmpname-2.webp" || echo "convert failed" >&2
-		mv -- "$tmpname-2.webp" "${1}" || echo "move failed" >&2
+		if [ -e "$tmpname-2.webp" ]; then
+		  mv -- "$tmpname-2.webp" "${1}" || echo "move failed" >&2
+		  [ -e "${1}" ] && rm "$tmpname.webp"
+		else
+		  mv -- "$tmpname.webp" "${1}" || echo "move failed" >&2
+		fi
 	else
-			wget -q -O "${1}" "${2}" > /dev/null || return 1
+			#wget -q -O "${1}" "${2}" > /dev/null || return 1
+			wget -q -O "${1}" "${2}" > /dev/null || ln -s ../notfound.webp "${1}"
 	fi
 }
