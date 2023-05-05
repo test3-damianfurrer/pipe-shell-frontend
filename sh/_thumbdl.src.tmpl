@@ -4,7 +4,7 @@ _thumbdl(){
 	#$2 url
 	#($3) duration
 	#[ "$3" ] && dmenu -p "Duration $3"
-	[ -e "${1}" ] && rm "${1}" #in a prev. attempt ../notfound.webp got overwritten due to link dereferencing.
+	[ -e "${1}" ] && rm -- "${1}" #in a prev. attempt ../notfound.webp got overwritten due to link dereferencing.
 	if [ "$3" ]; then
 		tmpname=$(date +%N)
 #		wget -q -O "$tmpname.webp" "${2}" > /dev/null || return 1
