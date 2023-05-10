@@ -2,7 +2,8 @@
 prcvideo_Show_Channel_oedivcrp(){
 	  bakfved="$fved"
           unset fved
-	  prcchannel $(grep "Url: /channel/" <<< "${xmsgtext}" | sed 's/Url: \/channel\///') || sel=""
+#	  { prcchannel $(grep "Url: /channel/" <<< "${xmsgtext}" | sed 's/Url: \/channel\///') | tee /dev/stderr || sel="";  }
+	  ./do.sh dochnlid  $(grep "Url: /channel/" <<< "${xmsgtext}" | sed 's/Url: \/channel\///') || sel=""
           fved="$bakfved"
           unset bakfved
 	  return 0

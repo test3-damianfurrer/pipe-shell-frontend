@@ -9,7 +9,7 @@ sourceprcvid(){
 }
 
 getactions(){
-  [ "$fved" ] || echo "fview"; echo "next"; echo "view+"; echo "info"; echo "related"; echo "comments"; echo "addto playlist"; echo "exit"
+  [ "$fved" ] || echo "fview"; echo "next"; echo "view+"; echo "info"; echo "related"; echo "reload"; echo "comments"; echo "addto playlist"; echo "exit"
 }
 
 poppresel(){

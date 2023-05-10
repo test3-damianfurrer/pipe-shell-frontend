@@ -1,5 +1,5 @@
 #!/bin/bash
-functions=$(echo "${functions}";echo "play";echo "doplaylistid";echo "dovidid";echo "doallplay";echo "listenall";echo "viewall")
+functions=$(echo "${functions}";echo "play";echo "doplaylistid";echo "dovidid";echo "dochnlid";echo "doallplay";echo "listenall";echo "viewall")
 #echo "play"
 play(){
 #!/bin/bash
@@ -41,6 +41,15 @@ dovidid(){
 ./sh/update-ifseq.sh
 source ./sh/prcvideo.src
 prcvideo "${1}" &
+./do.sh "update"
+}
+
+dochnlid(){
+#$1 id
+#source ./sh/selectavid.src
+./sh/update-ifseq.sh
+source ./sh/prcchannel.src
+prcchannel "${1}"
 ./do.sh "update"
 }
 

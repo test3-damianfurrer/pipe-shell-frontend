@@ -9,6 +9,13 @@ prcvideo_back_oedivcrp(){
   sel=""
 }
 
+prcvideo_reload_oedivcrp(){
+  vinf=$(_pipedget "streams/${vid}")
+  title=$(jq -r '.title' <<< "${vinf}")
+  relstream=""
+}
+
+
 prcvideo_view_oedivcrp(){
         stream=$(jq -r '.hls' <<< "${vinf}")
         [ "$nocache" == "" ] || mpv "$stream" --no-cache --no-ytdl
