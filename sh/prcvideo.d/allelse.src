@@ -24,7 +24,7 @@ prcvideo_view_oedivcrp(){
 
 prcvideo_fview_oedivcrp(){
 	nocache=""
-	preselect="720p0_MPEG_4"
+	preselect="720p0_MPEG_4{;}exit"
 	sel="qualselect"
 }
 prcvideo_qualselect_oedivcrp(){

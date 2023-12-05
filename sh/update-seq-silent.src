@@ -1,0 +1,23 @@
+#!/bin/sh
+
+update_seq(){
+  list=$(cat -)
+  lines=$(echo "$list" | wc -l)
+  declare -i i
+  i=1
+
+  while read line
+  do
+	#printf '%s   \r' "$i/$lines"
+	#_notifyUpdateLine "$i/$lines"
+	i+=1
+	update_chnl "${line}" "" || echo "ERROR: ${line}" # "&"
+  done <<< $list
+  [ -e ".upds" ] && rm .upds
+  [ -e ".upds" ] || date +%s > .upds
+}
+
+[ "$(type -t getchannel)" == "function" ]  || source ./sh/getchannel.src
+[ "$(type -t setup)" == "function" ]       || source ./sh/setup.src
+[ "$(type -t update_chnl)" == "function" ] || source ./sh/update-chnl.src
+[ "$(type -t _notify)" == "function" ]     || source ./sh/_notify.src
