@@ -1,0 +1,7 @@
+_vidid(){
+cat "videos/_uploaded/${@}/id.txt"
+}
+
+read -p "input: " input
+#echo "$input"
+_vidid "${input}"

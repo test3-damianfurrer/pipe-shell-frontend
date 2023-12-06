@@ -1,0 +1,8 @@
+alias .=source
+_latest(){
+x=1
+[ "$1" != "" ] && x="$1"
+let "n=$x*10"
+ls videos/_uploaded | sort -r -n | head -n "$n" | tail
+}
+_latest
