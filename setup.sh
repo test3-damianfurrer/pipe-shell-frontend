@@ -8,6 +8,7 @@ set -e
 #some programs might have alternatives and could be easy to change in the sh/_* files
 #chechprogramavailable "x" - test
 chechprogramavailable "jq"
+chechprogramavailable "gcc"
 chechprogramavailable "ffmpeg"
 chechprogramavailable "mpv"
 chechprogramavailable "dmenu"
@@ -15,12 +16,11 @@ chechprogramavailable "xmessage"
 chechprogramavailable "xclip"
 chechprogramavailable "sxiv"
 
-exit
-
 ln -sf do.sh play
 ln -sf do.sh listenall
 ln -sf do.sh update
 
+cp sh/_thumbsel.src.dflt.tmpl sh/_thumbsel.src
 #if we have the sxiv list mod installed
 [ -e "/usr/local/bin/sxiv" ] && cat sh/_thumbsel.src.tmpl > sh/_thumbsel.src
 
