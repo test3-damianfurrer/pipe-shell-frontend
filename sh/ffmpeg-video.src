@@ -1,11 +1,70 @@
 #!/bin/sh
 #set -e
 #streams=$(curl "streams/t_ZhpTTng0w" 2>/dev/null)
+ipcCmdVideo(){
+#force-media-title as option
+	#if audio file is not passed the first one (set at mpv start) is used
+	#e.g. start with vidonyl qualselect, any next video will have this audio instead
+	# passing file "" overwrites this
+	echo '{ "command": ["loadfile", "'"${1}"'", "replace", {"audio-files": "", "force-media-title": "'"${2}"'"}] }'
+}
+ipcCmdVideoAudio(){
+	#escpd=$(echo "${2}" | sed 's/:/\\:/g' | tee /dev/stderr)
+	echo '{ "command": ["loadfile", "'"${1}"'", "replace", {"audio-files": "", "audio-file": "'"${2}"'", "force-media-title": "'"${3}"'"}] }'
+	#audio-files seems to seperate by : but I know no way to esacape it
+}
+
+genTimeRemaingReq(){
+while true
+do
+echo '{ "command": ["get_property", "playtime-remaining"], "request_id": 123 }'
+sleep 0.25
+done
+}
+
+breakNCafterCommand(){
+	read line
+	echo "${line}" | nc -U "$(pwd)/.pipmpv-${PIP_MPV_SOCKET}-ipc.sock" | read x
+	echo "$x"
+}
+
+my_mpv(){
+	return
+	totalparms=""
+	#for var in "$@"
+	#do
+	#  #echo "$var"
+	#  totalparms="${totalparms} ${var}"
+	#done
+	#echo "mpv ${totalparms}"
+	#echo "mpv ${*@Q}"
+	#mpv --input-ipc-server=$(pwd)/.pip-ipc.sock --keep-open=yes --keep-open-pause=no $@
+	#mpv --input-ipc-server=$(pwd)/.pip-ipc.sock --keep-open=yes --keep-open-pause=no "${*@Q}"
+	eval "mpv --input-ipc-server=$(pwd)/.pip-ipc.sock --keep-open=yes --keep-open-pause=no ${*@Q}"
+	rm "$(pwd)/.pip-ipc.sock"
+}
+
+blockToVideoEnd(){
+	genTimeRemaingReq | nc -U "$(pwd)/.pipmpv-${PIP_MPV_SOCKET}-ipc.sock" | while read line
+	do
+	  reqid=$(echo "${line}" | jq .request_id)
+	  if [ "$reqid" == "123" ]; then
+	    val=$(echo "${line}" | jq .data | awk '{print $1}' FS='.')
+	    #[ $val -lt 1 ] && echo "less than"
+	    [ "$val" == "null" ] && continue
+	    [ $val -lt 1 ] && return
+#	  else
+#	    echo "${line}" | jq .
+	  fi
+	sleep 0.25
+	done
+}
+
 ffmpeg_video(){
 streams=$(cat -)
 savepath="$1"
 loop="$2"
-
+echo "$PIP_MPV_SOCKET"
 vidsel=$(awk '{print $1}' FS='{v-a}' <<< "${4}")
 audsel=$(awk '{print $2}' FS='{v-a}' <<< "${4}")
 cacheopt="--no-cache"
@@ -14,9 +73,11 @@ cacheopt="--no-cache"
 
 videostrm=$(jq -r '.videoStreams' <<< "${streams}" | streamselect "${vidsel}" ) || return 1 #  | tee /dev/stderr
 #>&2 echo "$videostrm"
+#video=$(jq -r ".url" <<< "${videostrm}" | tee /dev/stderr )
+#exit
 video=$(jq -r ".url" <<< "${videostrm}")
 vidonly=$(jq -r ".videoOnly" <<< "${videostrm}")
-
+pwd
 if [ "$vidonly" == "true" ]; then
   audio=$(jq -r '.audioStreams' <<< "${streams}" | streamselect "${audsel}" | jq -r '.url') || return 1
   if [ "$savepath" == "" ]; then
@@ -24,13 +85,34 @@ if [ "$vidonly" == "true" ]; then
 	#[ "$loop" == "0" ] && ffmpeg -i "${audio}" -i "${video}" -map 0:a -map 1:v -c copy -f matroska - 2>/dev/null | mpv - $cacheopt --force-seekable=no --no-ytdl
 	#[ "$loop" == "0" ] || ffmpeg -stream_loop "$loop" -i "${audio}" -c copy -f matroska - | ffmpeg -stream_loop "$loop" -i "${video}" -i - -map 1:a -map 0:v -c copy -f matroska - 2>/dev/null | mpv - $cacheopt --no-ytdl
 	[ "$loop" == "-1" ] && loop="inf"
-	mpv --audio-file="${audio}" "${video}" $cacheopt --force-seekable=no --no-ytdl --loop-file="$loop" --force-media-title="YT: ${title}"
+
+#maybe also add a fallback buffer video for the case when something breaks, where the player will try to jump to the next video(not sure, it might terminate)
+#seems i just accidentally paused after the last video stopped playing
+##maybe also add a play command after load file, it looks like it might become paused
+##maybe also command option like --keep-open-pause=no in the command json could help too
+
+	[ -e "$(pwd)/.pipmpv-${PIP_MPV_SOCKET}-ipc.sock" ] && echo "sock exists"
+	[ -e "$(pwd)/.pipmpv-${PIP_MPV_SOCKET}-ipc.sock" ] || echo "sock doesnt exist"
+	[ -e "$(pwd)/.pipmpv-${PIP_MPV_SOCKET}-ipc.sock" ] && ipcCmdVideoAudio "${video}" "${audio}" "YT: ${title}" | breakNCafterCommand #nc -U "$(pwd)/.pip-ipc.sock" > /dev/null &
+	[ -e "$(pwd)/.pipmpv-${PIP_MPV_SOCKET}-ipc.sock" ] || setsid -f $(pwd)/sh/my_mpv --audio-files="" --audio-file="${audio}" "${video}" $cacheopt --force-seekable=no --no-ytdl --loop-file="$loop" --force-media-title="YT: ${title}"
+	#should wait for socket creation, but what if this acctually fails? -> indefinite waiting then?
+	sleep 5 # # race condition ^
+	blockToVideoEnd
   fi
   [ "$savepath" == "" ] || ffmpeg -i "${audio}" -i "${video}" -map 0:a -map 1:v -c copy -f matroska - 2>/dev/null | tee "$savepath" | mpv - --no-ytdl
 else
     #[ "$savepath" == "" ] && ffmpeg -stream_loop "$loop" -i "${video}" -c copy -f matroska - 2>/dev/null | mpv - $cacheopt --no-ytdl
     [ "$loop" == "-1" ] && loop="inf"
-    [ "$savepath" == "" ] && mpv "${video}" $cacheopt --force-seekable=no --no-ytdl --loop-file="$loop" --force-media-title="YT: ${title}"
+    #[ "$savepath" == "" ] && mpv "${video}" $cacheopt --force-seekable=no --no-ytdl --loop-file="$loop" --force-media-title="YT: ${title}"
+  if [ "$savepath" == "" ]
+  then
+    [ -e "$(pwd)/.pipmpv-${PIP_MPV_SOCKET}-ipc.sock" ] && echo "sock exists"
+    [ -e "$(pwd)/.pipmpv-${PIP_MPV_SOCKET}-ipc.sock" ] || echo "sock doesnt exist"
+    [ -e "$(pwd)/.pipmpv-${PIP_MPV_SOCKET}-ipc.sock" ] && ipcCmdVideo "${video}" "YT: ${title}" | breakNCafterCommand #nc -U "$(pwd)/.pip-ipc.sock" > /dev/null &
+    [ -e "$(pwd)/.pipmpv-${PIP_MPV_SOCKET}-ipc.sock" ] || setsid -f $(pwd)/sh/my_mpv "${video}" $cacheopt --force-seekable=no --no-ytdl --loop-file="$loop" --force-media-title="YT: ${title}"
+    sleep 5 # # race condition ^
+    blockToVideoEnd
+  fi
     [ "$savepath" == "" ] || ffmpeg -i "${video}" -c copy -f matroska - 2>/dev/null | tee "$savepath" |mpv - --no-ytdl
   #mpv "${video}"
 fi

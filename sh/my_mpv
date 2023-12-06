@@ -1,0 +1,5 @@
+#!/bin/bash
+#PIP_MPV_SOCKET
+echo "$PIP_MPV_SOCKET"
+eval "mpv --input-ipc-server=$(pwd)/.pipmpv-${PIP_MPV_SOCKET}-ipc.sock --keep-open=yes --keep-open-pause=no ${*@Q}"
+rm "$(pwd)/.pipmpv-${PIP_MPV_SOCKET}-ipc.sock"
