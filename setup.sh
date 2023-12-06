@@ -20,6 +20,9 @@ ln -sf do.sh play
 ln -sf do.sh listenall
 ln -sf do.sh update
 
+[ -e "sh/_pipedget.src" ] ||  cp sh/_pipedget.src.tmpl sh/_pipedget.src
+diff sh/_pipedget.src.tmpl sh/_pipedget.src && echo "Remember to Set your backend url in sh/_pipedget.src!"
+diff sh/_pipedget.src.tmpl sh/_pipedget.src && exit
 cp sh/_thumbsel.src.dflt.tmpl sh/_thumbsel.src
 #if we have the sxiv list mod installed
 [ -e "/usr/local/bin/sxiv" ] && cat sh/_thumbsel.src.tmpl > sh/_thumbsel.src

@@ -10,6 +10,7 @@ sh/_thumbsel.src
 sh/prcvideo.d/stream.src
 sh/prcvideo.d/view+.d/06_stream.src
 sh/_thumbdl.src
+sh/_pipedget.src
 sh/*.bak
 sh/local*.src
 src.do/playext.src
